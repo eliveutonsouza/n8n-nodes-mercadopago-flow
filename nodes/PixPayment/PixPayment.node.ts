@@ -257,6 +257,154 @@ export class PixPayment implements INodeType {
 				default: 0,
 				description: 'Valor do reembolso em reais (deixe vazio para reembolso total)',
 			},
+			// Plan Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+					},
+				},
+				options: [
+					{
+						name: 'Criar',
+						value: 'create',
+						description: 'Criar um plano de assinatura',
+						action: 'Criar plano',
+					},
+					{
+						name: 'Consultar',
+						value: 'get',
+						description: 'Consultar um plano',
+						action: 'Consultar plano',
+					},
+					{
+						name: 'Listar',
+						value: 'list',
+						description: 'Listar planos',
+						action: 'Listar planos',
+					},
+					{
+						name: 'Atualizar',
+						value: 'update',
+						description: 'Atualizar um plano',
+						action: 'Atualizar plano',
+					},
+				],
+				default: 'create',
+			},
+			// Plan Create Fields
+			{
+				displayName: 'Nome do Plano',
+				name: 'reason',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['create'],
+					},
+				},
+				default: '',
+				description: 'Nome/descrição do plano',
+			},
+			{
+				displayName: 'Valor',
+				name: 'amount',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['create'],
+					},
+				},
+				default: 0,
+				description: 'Valor do plano em reais (ex: 99.99)',
+			},
+			{
+				displayName: 'Frequência',
+				name: 'frequency',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['create'],
+					},
+				},
+				default: 1,
+				description: 'Frequência de cobrança (ex: 1 para mensal)',
+			},
+			{
+				displayName: 'Tipo de Frequência',
+				name: 'frequencyType',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: 'Dias',
+						value: 'days',
+					},
+					{
+						name: 'Meses',
+						value: 'months',
+					},
+				],
+				default: 'months',
+				description: 'Tipo de frequência (dias ou meses)',
+			},
+			// Plan Get/Update Fields
+			{
+				displayName: 'ID do Plano',
+				name: 'planId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['get', 'update'],
+					},
+				},
+				default: '',
+				description: 'ID do plano',
+			},
+			// Plan Update Fields
+			{
+				displayName: 'Nome do Plano',
+				name: 'reason',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['update'],
+					},
+				},
+				default: '',
+				description: 'Novo nome/descrição do plano',
+			},
+			{
+				displayName: 'Valor',
+				name: 'amount',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['plans'],
+						operation: ['update'],
+					},
+				},
+				default: 0,
+				description: 'Novo valor do plano em reais',
+			},
 			// Subscription Operations
 			{
 				displayName: 'Operation',
