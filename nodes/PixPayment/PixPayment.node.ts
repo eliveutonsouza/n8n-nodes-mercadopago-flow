@@ -21,6 +21,7 @@ import {
 	getDocumentType,
 	validateEmail,
 	handleMercadoPagoError,
+	normalizeNumericValue,
 } from './helpers';
 
 export class PixPayment implements INodeType {
@@ -984,10 +985,14 @@ export class PixPayment implements INodeType {
 		baseUrl: string,
 		credentials: MercadoPagoCredentials,
 	): Promise<Plan> {
-		const reason = executeFunctions.getNodeParameter('reason', itemIndex) as string;
-		const amount = executeFunctions.getNodeParameter('amount', itemIndex) as number;
-		const frequency = executeFunctions.getNodeParameter('frequency', itemIndex) as number;
-		const frequencyType = executeFunctions.getNodeParameter('frequencyType', itemIndex) as string;
+		const reason = executeFunctions.getNodeParameter('reason', itemIndex, '') as string;
+		const amountRaw = executeFunctions.getNodeParameter('amount', itemIndex, 0) as number | string;
+		const frequencyRaw = executeFunctions.getNodeParameter('frequency', itemIndex, 1) as number | string;
+		const frequencyType = executeFunctions.getNodeParameter('frequencyType', itemIndex, 'months') as string;
+
+		// Normaliza valores numéricos (converte vírgula para ponto)
+		const amount = normalizeNumericValue(amountRaw);
+		const frequency = normalizeNumericValue(frequencyRaw);
 
 		if (!reason || reason.trim() === '') {
 			throw new Error('Nome do plano é obrigatório');
@@ -1094,13 +1099,16 @@ export class PixPayment implements INodeType {
 		baseUrl: string,
 		credentials: MercadoPagoCredentials,
 	): Promise<Plan> {
-		const planId = executeFunctions.getNodeParameter('planId', itemIndex) as string;
-		const reason = executeFunctions.getNodeParameter('reason', itemIndex) as string;
-		const amount = executeFunctions.getNodeParameter('amount', itemIndex) as number;
+		const planId = executeFunctions.getNodeParameter('planId', itemIndex, '') as string;
+		const reason = executeFunctions.getNodeParameter('reason', itemIndex, '') as string;
+		const amountRaw = executeFunctions.getNodeParameter('amount', itemIndex, 0) as number | string;
 
 		if (!planId || planId.trim() === '') {
 			throw new Error('ID do plano é obrigatório');
 		}
+
+		// Normaliza valor numérico (converte vírgula para ponto)
+		const amount = normalizeNumericValue(amountRaw);
 
 		const body: any = {};
 		

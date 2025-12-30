@@ -107,3 +107,24 @@ export function validateEmail(email: string): boolean {
 	return emailRegex.test(email);
 }
 
+/**
+ * Normaliza valores numéricos convertendo vírgula para ponto decimal
+ * Aceita string ou number e retorna number
+ * Exemplo: "14,9" -> 14.9, "14.9" -> 14.9
+ */
+export function normalizeNumericValue(value: string | number | undefined | null): number {
+	if (value === undefined || value === null) {
+		return 0;
+	}
+	
+	if (typeof value === 'number') {
+		return value;
+	}
+	
+	// Converte string: substitui vírgula por ponto e remove espaços
+	const normalized = String(value).trim().replace(',', '.');
+	const parsed = parseFloat(normalized);
+	
+	return isNaN(parsed) ? 0 : parsed;
+}
+

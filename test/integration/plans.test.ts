@@ -242,6 +242,56 @@ describe('Plans Integration Tests', () => {
 				}),
 			);
 		});
+
+		it('deve converter vírgula para ponto decimal no valor', async () => {
+			// Arrange - simula valor com vírgula como string
+			mockExecuteFunctions.getNodeParameter.mockImplementation((name: string, _index: number, defaultValue?: any) => {
+				const params: { [key: string]: any } = {
+					resource: 'plans',
+					operation: 'create',
+					reason: mockPlanData.reason,
+					amount: '14,9', // Valor com vírgula como string
+					frequency: mockPlanData.frequency,
+					frequencyType: mockPlanData.frequencyType,
+				};
+				return params[name] !== undefined ? params[name] : defaultValue;
+			});
+
+			mockExecuteFunctions.helpers.requestWithAuthentication.call.mockResolvedValue({
+				...mockPlanResponse,
+				auto_recurring: {
+					...mockPlanResponse.auto_recurring,
+					transaction_amount: 1490, // 14.9 * 100
+				},
+			});
+
+			// Act
+			await (node.execute as any).call(
+				mockExecuteFunctions,
+				[
+					{
+						json: {
+							resource: 'plans',
+							operation: 'create',
+						},
+					},
+				],
+				0,
+			);
+
+			// Assert - verifica que a vírgula foi convertida para ponto e normalizada para centavos
+			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
+				mockExecuteFunctions,
+				'pixPaymentApi',
+				expect.objectContaining({
+					body: expect.objectContaining({
+						auto_recurring: expect.objectContaining({
+							transaction_amount: 1490, // 14.9 * 100 (vírgula convertida para ponto)
+						}),
+					}),
+				}),
+			);
+		});
 	});
 
 	describe('getPlan', () => {
