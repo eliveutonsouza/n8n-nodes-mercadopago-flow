@@ -19,7 +19,7 @@ Node customizado do n8n para processamento de pagamentos via Mercado Pago, com s
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/your-username/n8n-nodes-mercadopago-pix-assinatura.git
+git clone https://github.com/eliveutonsouza/n8n-nodes-mercadopago-pix-assinatura.git
 cd n8n-nodes-mercadopago-pix-assinatura
 ```
 
