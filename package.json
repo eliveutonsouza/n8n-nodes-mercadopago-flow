@@ -1,0 +1,67 @@
+{
+  "name": "n8n-nodes-mercadopago-pix-assinatura",
+  "version": "1.0.0",
+  "description": "n8n node para processamento de pagamentos PIX e assinaturas via Mercado Pago",
+  "keywords": [
+    "n8n-community-node-package",
+    "mercadopago",
+    "pix",
+    "assinaturas",
+    "pagamentos",
+    "brasil"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/your-username/n8n-nodes-mercadopago-pix-assinatura",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/n8n-nodes-mercadopago-pix-assinatura.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier --write .",
+    "lint": "eslint nodes credentials --ext .ts",
+    "lintfix": "eslint nodes credentials --ext .ts --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "prepublishOnly": "npm run build && npm run lint -s"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 2,
+    "nodes": [
+      "dist/nodes/PixPayment/PixPayment.node.js"
+    ],
+    "credentials": [
+      "dist/credentials/PixPaymentApi.credentials.js"
+    ]
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "eslint-plugin-n8n-nodes-base": "~1.11.0",
+    "gulp": "^4.0.2",
+    "jest": "^30.2.0",
+    "jest-environment-node": "^30.2.0",
+    "n8n-workflow": "*",
+    "prettier": "^2.8.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "~5.3.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
