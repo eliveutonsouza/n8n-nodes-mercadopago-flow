@@ -11,14 +11,14 @@
     "brasil"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/your-username/n8n-nodes-mercadopago-pix-assinatura",
+  "homepage": "https://github.com/eliveutonsouza/n8n-nodes-mercadopago-pix-assinatura",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "Eliveuton Souza",
+    "email": "eliveuton3m@hotmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/n8n-nodes-mercadopago-pix-assinatura.git"
+    "url": "https://github.com/eliveutonsouza/n8n-nodes-mercadopago-pix-assinatura.git"
   },
   "main": "index.js",
   "scripts": {
