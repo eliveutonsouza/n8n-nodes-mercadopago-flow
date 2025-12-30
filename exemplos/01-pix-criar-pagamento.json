@@ -1,0 +1,115 @@
+{
+  "name": "Mercado Pago - Criar Pagamento PIX",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-pix",
+      "name": "Quando clicar em 'Testar'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "pix",
+        "operation": "create",
+        "amount": 10.5,
+        "description": "Pagamento de teste - Pedido #12345",
+        "payerEmail": "cliente@exemplo.com",
+        "payerDocument": "12345678909",
+        "payerName": "João Silva",
+        "externalReference": "PEDIDO_12345",
+        "idempotencyKey": "IDEMP_{{ $now.format('yyyyMMddHHmmss') }}"
+      },
+      "id": "mercado-pago-pix",
+      "name": "Mercado Pago PIX",
+      "type": "n8n-nodes-custom.pixPayment",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "pixPaymentApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "qr-code",
+              "name": "qrCode",
+              "value": "={{ $json.qrCode }}",
+              "type": "string"
+            },
+            {
+              "id": "qr-code-base64",
+              "name": "qrCodeBase64",
+              "value": "={{ $json.qrCodeBase64 }}",
+              "type": "string"
+            },
+            {
+              "id": "payment-id",
+              "name": "paymentId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "amount",
+              "name": "amount",
+              "value": "={{ $json.amount }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Quando clicar em 'Testar'": {
+      "main": [
+        [
+          {
+            "node": "Mercado Pago PIX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mercado Pago PIX": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2024-12-30T00:00:00.000Z",
+  "versionId": "1"
+}
+

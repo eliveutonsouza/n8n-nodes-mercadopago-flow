@@ -1,0 +1,114 @@
+{
+  "name": "Mercado Pago - Registrar Webhook",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-webhook",
+      "name": "Quando clicar em 'Testar'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "webhooks",
+        "operation": "register",
+        "url": "https://webhook.exemplo.com/notificacoes",
+        "events": [
+          "payment",
+          "subscription"
+        ],
+        "description": "Webhook para notificações de pagamentos e assinaturas"
+      },
+      "id": "mercado-pago-webhook",
+      "name": "Mercado Pago Webhook",
+      "type": "n8n-nodes-custom.pixPayment",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "pixPaymentApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "webhook-id",
+              "name": "webhookId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "events",
+              "name": "events",
+              "value": "={{ $json.events }}",
+              "type": "array"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "description",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Quando clicar em 'Testar'": {
+      "main": [
+        [
+          {
+            "node": "Mercado Pago Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mercado Pago Webhook": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2024-12-30T00:00:00.000Z",
+  "versionId": "1"
+}
+

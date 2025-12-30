@@ -1,0 +1,107 @@
+{
+  "name": "Mercado Pago - Criar Assinatura",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-subscription",
+      "name": "Quando clicar em 'Testar'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "subscriptions",
+        "operation": "create",
+        "planId": "PLAN_123456",
+        "payerEmail": "cliente@exemplo.com",
+        "payerDocument": "12345678909",
+        "startDate": "={{ $now.toISO() }}",
+        "trialPeriodDays": 7
+      },
+      "id": "mercado-pago-subscription",
+      "name": "Mercado Pago Assinatura",
+      "type": "n8n-nodes-custom.pixPayment",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "pixPaymentApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "subscription-id",
+              "name": "subscriptionId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "payer-email",
+              "name": "payerEmail",
+              "value": "={{ $json.payerEmail }}",
+              "type": "string"
+            },
+            {
+              "id": "init-point",
+              "name": "initPoint",
+              "value": "={{ $json.raw.init_point || $json.raw.sandbox_init_point }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Quando clicar em 'Testar'": {
+      "main": [
+        [
+          {
+            "node": "Mercado Pago Assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mercado Pago Assinatura": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2024-12-30T00:00:00.000Z",
+  "versionId": "1"
+}
+
