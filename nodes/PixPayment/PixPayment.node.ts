@@ -1430,10 +1430,12 @@ export class PixPayment implements INodeType {
     }
 
     // Construir auto_recurring
+    // NOTA: Para planos, a API do Mercado Pago espera transaction_amount em formato decimal (não centavos)
+    // Exemplo: 10.9 (não 1090)
     const autoRecurring: any = {
       frequency,
       frequency_type: frequencyType,
-      transaction_amount: normalizeAmount(amount),
+      transaction_amount: amount, // Valor já está em formato decimal após normalizeNumericValue
       currency_id: currencyId,
     };
 
@@ -1585,8 +1587,9 @@ export class PixPayment implements INodeType {
     }
 
     if (amount && amount > 0) {
+      // NOTA: Para planos, a API do Mercado Pago espera transaction_amount em formato decimal (não centavos)
       body.auto_recurring = {
-        transaction_amount: normalizeAmount(amount),
+        transaction_amount: amount, // Valor já está em formato decimal após normalizeNumericValue
       };
     }
 
@@ -2277,9 +2280,9 @@ export class PixPayment implements INodeType {
 
       case "plans":
         normalized.planId = data.id;
-        normalized.amount = data.auto_recurring?.transaction_amount
-          ? data.auto_recurring.transaction_amount / 100
-          : undefined;
+        // NOTA: Para planos, a API retorna transaction_amount em formato decimal (não centavos)
+        // Exemplo: 10.9 (não 1090), então não precisa dividir por 100
+        normalized.amount = data.auto_recurring?.transaction_amount;
         normalized.description = data.reason;
         break;
 
