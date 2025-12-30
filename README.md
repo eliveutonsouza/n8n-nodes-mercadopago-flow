@@ -81,7 +81,7 @@ docker restart n8n
 
 ## 📖 Uso
 
-> 📋 **Guia Completo de Campos**: Para exemplos detalhados de preenchimento de todos os campos de todas as operações, consulte o [Guia de Referência de Campos](./GUIA_CAMPOS.md).
+> 📋 **Guia Completo de Campos**: Para exemplos detalhados de preenchimento de todos os campos de todas as operações, consulte o [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md).
 
 ### PIX - Criar Pagamento
 

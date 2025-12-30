@@ -11,6 +11,7 @@
 ## Arquivos Incluídos no Pacote
 
 O pacote incluirá apenas:
+
 - `dist/` - Arquivos compilados (JS, SVG, tipos)
 - `package.json` - Configuração do pacote
 - `README.md` - Documentação
@@ -24,6 +25,7 @@ npm login
 ```
 
 Você precisará fornecer:
+
 - Username
 - Password
 - Email
@@ -44,6 +46,7 @@ npm publish
 ```
 
 **Nota**: O script `prepublishOnly` executará automaticamente:
+
 - `npm run build` - Compila o TypeScript e copia ícones
 
 ### 4. Verificar Publicação
@@ -66,6 +69,7 @@ E reiniciar o n8n para que o node apareça na interface.
 Para publicar uma nova versão:
 
 1. Atualize a versão no `package.json`:
+
    ```bash
    npm version patch  # para 1.0.1
    npm version minor  # para 1.1.0
@@ -73,6 +77,7 @@ Para publicar uma nova versão:
    ```
 
 2. Faça commit e push:
+
    ```bash
    git push && git push --tags
    ```
@@ -96,12 +101,14 @@ Antes de publicar, certifique-se de:
 ## Troubleshooting
 
 ### Erro: "Package name already exists"
+
 - O nome pode estar em uso. Considere usar um nome alternativo ou scoped package (`@seu-usuario/n8n-nodes-mercadopago-pix-assinatura`)
 
 ### Erro: "You must verify your email"
+
 - Verifique seu email no npm antes de publicar
 
 ### Erro: "Insufficient permissions"
+
 - Certifique-se de estar logado com a conta correta
 - Verifique se você tem permissão para publicar pacotes não-scoped
-

@@ -531,7 +531,7 @@ Todas as datas devem estar no formato ISO 8601:
 
 ## 🔗 Referências
 
-- [README Principal](./README.md)
+- [README Principal](../README.md)
 - [Documentação do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs)
 - [API de Pagamentos](https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post)
 - [API de Assinaturas](https://www.mercadopago.com.br/developers/pt/docs/your-integrations/subscriptions)
