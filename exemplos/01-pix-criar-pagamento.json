@@ -23,7 +23,7 @@
       },
       "id": "mercado-pago-pix",
       "name": "Mercado Pago PIX",
-      "type": "n8n-nodes-custom.pixPayment",
+      "type": "n8n-nodes-mercadopago-pix-assinatura.pixPayment",
       "typeVersion": 1,
       "position": [450, 300],
       "credentials": {

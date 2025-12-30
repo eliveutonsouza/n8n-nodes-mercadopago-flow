@@ -22,7 +22,7 @@
       },
       "id": "mercado-pago-webhook",
       "name": "Mercado Pago Webhook",
-      "type": "n8n-nodes-custom.pixPayment",
+      "type": "n8n-nodes-mercadopago-pix-assinatura.pixPayment",
       "typeVersion": 1,
       "position": [450, 300],
       "credentials": {
