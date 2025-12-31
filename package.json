@@ -49,10 +49,10 @@
   "n8n": {
     "n8nNodesApiVersion": 2,
     "nodes": [
-      "dist/nodes/PixPayment/PixPayment.node.js"
+      "dist/nodes/PaymentMercadoPago/PaymentMercadoPago.node.js"
     ],
     "credentials": [
-      "dist/credentials/PixPaymentApi.credentials.js"
+      "dist/credentials/PaymentMercadoPagoAPI.credentials.js"
     ]
   },
   "devDependencies": {

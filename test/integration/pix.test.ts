@@ -2,7 +2,7 @@
  * Testes de integração para operações PIX
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import {
 	mockPixPaymentResponse,
@@ -14,12 +14,12 @@ import { mockPixPaymentData } from '../mocks/fixtures';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 
 describe('PIX Integration Tests', () => {
-	let node: PixPayment;
+	let node: PaymentMercadoPago;
 	let mockExecuteFunctions: MockExecuteFunctions;
 	const baseUrl = 'https://api.mercadopago.com';
 
 	beforeEach(() => {
-		node = new PixPayment();
+		node = new PaymentMercadoPago();
 		mockExecuteFunctions = createMockExecuteFunctions();
 	});
 
@@ -197,7 +197,7 @@ describe('PIX Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('approved');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/v1/payments/123456789`,

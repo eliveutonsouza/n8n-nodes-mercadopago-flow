@@ -2,7 +2,7 @@
  * Testes de integração para operações de Assinaturas
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import {
 	mockSubscriptionResponse,
@@ -11,12 +11,12 @@ import { mockSubscriptionData } from '../mocks/fixtures';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 
 describe('Subscriptions Integration Tests', () => {
-	let node: PixPayment;
+	let node: PaymentMercadoPago;
 	let mockExecuteFunctions: MockExecuteFunctions;
 	const baseUrl = 'https://api.mercadopago.com';
 
 	beforeEach(() => {
-		node = new PixPayment();
+		node = new PaymentMercadoPago();
 		mockExecuteFunctions = createMockExecuteFunctions();
 	});
 
@@ -51,7 +51,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('authorized');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'POST',
 					url: `${baseUrl}/preapproval`,
@@ -123,7 +123,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result[0][0].json.id).toBe(mockSubscriptionResponse.id);
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/sub-123`,
@@ -158,7 +158,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('paused');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'PUT',
 					body: { status: 'paused' },
@@ -193,7 +193,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('authorized');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'PUT',
 					body: { status: 'authorized' },
@@ -228,7 +228,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('cancelled');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'PUT',
 					body: { status: 'cancelled' },
@@ -266,7 +266,7 @@ describe('Subscriptions Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/search`,

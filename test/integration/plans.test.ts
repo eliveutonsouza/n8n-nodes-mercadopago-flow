@@ -1,4 +1,4 @@
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import {
 	mockPlanResponse,
@@ -8,12 +8,12 @@ import { mockPlanData } from '../mocks/fixtures';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 
 describe('Plans Integration Tests', () => {
-	let node: PixPayment;
+	let node: PaymentMercadoPago;
 	let mockExecuteFunctions: MockExecuteFunctions;
 	const baseUrl = 'https://api.mercadopago.com';
 
 	beforeEach(() => {
-		node = new PixPayment();
+		node = new PaymentMercadoPago();
 		mockExecuteFunctions = createMockExecuteFunctions();
 	});
 
@@ -53,7 +53,7 @@ describe('Plans Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'POST',
 					url: `${baseUrl}/preapproval_plan`,
@@ -62,7 +62,7 @@ describe('Plans Integration Tests', () => {
 						auto_recurring: expect.objectContaining({
 							frequency: mockPlanData.frequency,
 							frequency_type: mockPlanData.frequencyType,
-							transaction_amount: mockPlanData.amount * 100,
+							transaction_amount: mockPlanData.amount,
 							currency_id: 'BRL',
 						}),
 					}),
@@ -197,7 +197,7 @@ describe('Plans Integration Tests', () => {
 			).rejects.toThrow('Nome do plano é obrigatório');
 		});
 
-		it('deve normalizar valor para centavos', async () => {
+		it('deve enviar valor em formato decimal', async () => {
 			// Arrange
 			mockExecuteFunctions.getNodeParameter.mockImplementation((name: string) => {
 				const params: { [key: string]: any } = {
@@ -232,11 +232,11 @@ describe('Plans Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					body: expect.objectContaining({
 						auto_recurring: expect.objectContaining({
-							transaction_amount: 1234, // 12.34 * 100
+							transaction_amount: 12.34,
 						}),
 					}),
 				}),
@@ -261,7 +261,7 @@ describe('Plans Integration Tests', () => {
 				...mockPlanResponse,
 				auto_recurring: {
 					...mockPlanResponse.auto_recurring,
-					transaction_amount: 1490, // 14.9 * 100
+					transaction_amount: 14.9,
 				},
 			});
 
@@ -279,14 +279,14 @@ describe('Plans Integration Tests', () => {
 				0,
 			);
 
-			// Assert - verifica que a vírgula foi convertida para ponto e normalizada para centavos
+			// Assert - verifica que a vírgula foi convertida para ponto e enviada em formato decimal
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					body: expect.objectContaining({
 						auto_recurring: expect.objectContaining({
-							transaction_amount: 1490, // 14.9 * 100 (vírgula convertida para ponto)
+							transaction_amount: 14.9,
 						}),
 					}),
 				}),
@@ -327,7 +327,7 @@ describe('Plans Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval_plan/${mockPlanResponse.id}`,
@@ -398,7 +398,7 @@ describe('Plans Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval_plan/search`,
@@ -428,7 +428,7 @@ describe('Plans Integration Tests', () => {
 				reason: 'Plano Atualizado',
 				auto_recurring: {
 					...mockPlanResponse.auto_recurring,
-					transaction_amount: 14999,
+					transaction_amount: 149.99,
 				},
 			});
 
@@ -449,14 +449,14 @@ describe('Plans Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				mockExecuteFunctions,
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'PUT',
 					url: `${baseUrl}/preapproval_plan/${mockPlanResponse.id}`,
 					body: expect.objectContaining({
 						reason: 'Plano Atualizado',
 						auto_recurring: expect.objectContaining({
-							transaction_amount: 14999,
+							transaction_amount: 149.99,
 						}),
 					}),
 				}),

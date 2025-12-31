@@ -2,18 +2,18 @@
  * Testes unitários para credentials
  */
 
-import { PixPaymentApi } from '../../credentials/PixPaymentApi.credentials';
+import { PaymentMercadoPagoAPI } from '../../credentials/PaymentMercadoPagoAPI.credentials';
 
-describe('PixPaymentApi Credentials', () => {
-	let credentials: PixPaymentApi;
+describe('PaymentMercadoPagoAPI Credentials', () => {
+	let credentials: PaymentMercadoPagoAPI;
 
 	beforeEach(() => {
-		credentials = new PixPaymentApi();
+		credentials = new PaymentMercadoPagoAPI();
 	});
 
 	describe('Estrutura', () => {
 		it('deve ter nome correto', () => {
-			expect(credentials.name).toBe('pixPaymentApi');
+			expect(credentials.name).toBe('paymentMercadoPagoAPI');
 		});
 
 		it('deve ter displayName correto', () => {

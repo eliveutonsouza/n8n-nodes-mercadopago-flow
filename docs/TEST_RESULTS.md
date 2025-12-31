@@ -25,7 +25,7 @@
 #### Credentials
 
 - **Cobertura**: 100% em todas as métricas ✅
-- **Arquivo**: `PixPaymentApi.credentials.ts`
+- **Arquivo**: `PaymentMercadoPagoAPI.credentials.ts`
 
 #### Helpers
 
@@ -36,7 +36,7 @@
 #### Node Principal
 
 - **Cobertura**: 96.8% statements, 88.65% branches ✅
-- **Arquivo**: `PixPayment.node.ts`
+- **Arquivo**: `PaymentMercadoPago.node.ts`
 - **Linhas não cobertas**: 613, 622, 653, 825, 1036, 1164 (casos de erro raros)
 
 ## 📋 Testes por Categoria

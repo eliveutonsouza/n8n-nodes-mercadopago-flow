@@ -18,11 +18,11 @@
       },
       "id": "mercado-pago-recurring",
       "name": "Mercado Pago Recorrente",
-      "type": "n8n-nodes-mercadopago-pix-assinatura.pixPayment",
+      "type": "n8n-nodes-mercadopago-pix-assinatura.paymentMercadoPago",
       "typeVersion": 1,
       "position": [450, 300],
       "credentials": {
-        "pixPaymentApi": {
+        "paymentMercadoPagoAPI": {
           "id": "1",
           "name": "Mercado Pago API"
         }

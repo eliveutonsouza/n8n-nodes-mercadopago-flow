@@ -3,8 +3,8 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class PixPaymentApi implements ICredentialType {
-	name = 'pixPaymentApi';
+export class PaymentMercadoPagoAPI implements ICredentialType {
+	name = 'paymentMercadoPagoAPI';
 	displayName = 'Mercado Pago API';
 	documentationUrl = 'https://www.mercadopago.com.br/developers/pt/docs';
 	properties: INodeProperties[] = [

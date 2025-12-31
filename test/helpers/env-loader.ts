@@ -3,7 +3,7 @@
  */
 
 import * as dotenv from 'dotenv';
-import { MercadoPagoCredentials } from '../../nodes/PixPayment/types';
+import { MercadoPagoCredentials } from '../../nodes/PaymentMercadoPago/types';
 
 // Carrega variáveis de ambiente do arquivo .env
 dotenv.config();

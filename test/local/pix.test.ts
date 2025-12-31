@@ -3,7 +3,7 @@
  * Executa testes reais contra a API do Mercado Pago
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { LocalExecuteFunctions } from '../helpers/local-execute-functions';
 import { loadCredentialsFromEnv, displayCredentialsInfo } from '../helpers/env-loader';
 
@@ -13,7 +13,7 @@ async function testCreatePixPayment() {
 	const credentials = loadCredentialsFromEnv();
 	displayCredentialsInfo(credentials);
 
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	// Configura parâmetros
@@ -61,7 +61,7 @@ async function testGetPixPayment(paymentId: string) {
 	console.log(`📝 Payment ID: ${paymentId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -100,7 +100,7 @@ async function testRefundPixPayment(paymentId: string) {
 	console.log(`📝 Payment ID: ${paymentId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({

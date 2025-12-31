@@ -2,7 +2,7 @@
  * Testes de integração para operações de Webhooks
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import {
 	mockWebhookResponse,
@@ -11,12 +11,12 @@ import { mockWebhookData } from '../mocks/fixtures';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 
 describe('Webhooks Integration Tests', () => {
-	let node: PixPayment;
+	let node: PaymentMercadoPago;
 	let mockExecuteFunctions: MockExecuteFunctions;
 	const baseUrl = 'https://api.mercadopago.com';
 
 	beforeEach(() => {
-		node = new PixPayment();
+		node = new PaymentMercadoPago();
 		mockExecuteFunctions = createMockExecuteFunctions();
 	});
 
@@ -49,7 +49,7 @@ describe('Webhooks Integration Tests', () => {
 			expect(result[0][0].json.url).toBe(mockWebhookData.url);
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'POST',
 					url: `${baseUrl}/v1/webhooks`,
@@ -130,7 +130,7 @@ describe('Webhooks Integration Tests', () => {
 			expect(result[0][0].json.id).toBe(mockWebhookResponse.id);
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/v1/webhooks/123456`,
@@ -168,7 +168,7 @@ describe('Webhooks Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/v1/webhooks`,
@@ -200,7 +200,7 @@ describe('Webhooks Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'DELETE',
 					url: `${baseUrl}/v1/webhooks/123456`,

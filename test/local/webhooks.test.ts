@@ -3,7 +3,7 @@
  * Executa testes reais contra a API do Mercado Pago
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { LocalExecuteFunctions } from '../helpers/local-execute-functions';
 import { loadCredentialsFromEnv, displayCredentialsInfo } from '../helpers/env-loader';
 
@@ -13,7 +13,7 @@ async function testRegisterWebhook() {
 	const credentials = loadCredentialsFromEnv();
 	displayCredentialsInfo(credentials);
 
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -55,7 +55,7 @@ async function testGetWebhook(webhookId: string) {
 	console.log(`📝 Webhook ID: ${webhookId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -93,7 +93,7 @@ async function testListWebhooks() {
 	console.log('\n🧪 Teste: Listar Webhooks\n');
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -131,7 +131,7 @@ async function testDeleteWebhook(webhookId: string) {
 	console.log(`📝 Webhook ID: ${webhookId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({

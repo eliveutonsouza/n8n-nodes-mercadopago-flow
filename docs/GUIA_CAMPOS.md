@@ -121,6 +121,7 @@ Cria uma nova assinatura baseada em um plano existente.
 | ID do Plano | string | ✅ Sim | ID do plano de assinatura | `"PLAN_123456"` |
 | E-mail do Pagador | string | ✅ Sim | E-mail do pagador | `"cliente@exemplo.com"` |
 | CPF/CNPJ do Pagador | string | ❌ Não | CPF ou CNPJ do pagador | `"12345678909"` |
+| Token do Cartão | string | ✅ Sim | Token do cartão de crédito (obtido via Mercado Pago Checkout) | `"abc123def456"` |
 | Data de Início | dateTime | ❌ Não | Data de início da assinatura | `"2024-01-01T00:00:00.000Z"` |
 | Período de Trial (dias) | number | ❌ Não | Número de dias de período de trial | `7` |
 
@@ -133,6 +134,7 @@ Cria uma nova assinatura baseada em um plano existente.
   "planId": "PLAN_123456",
   "payerEmail": "cliente@exemplo.com",
   "payerDocument": "12345678909",
+  "cardTokenId": "abc123def456",
   "startDate": "2024-01-01T00:00:00.000Z",
   "trialPeriodDays": 7
 }
@@ -145,9 +147,12 @@ Cria uma nova assinatura baseada em um plano existente.
   "resource": "subscriptions",
   "operation": "create",
   "planId": "PLAN_123456",
-  "payerEmail": "cliente@exemplo.com"
+  "payerEmail": "cliente@exemplo.com",
+  "cardTokenId": "abc123def456"
 }
 ```
+
+**⚠️ Nota Importante:** Para criar assinaturas baseadas em planos, o `cardTokenId` é obrigatório. O token do cartão deve ser obtido através do Mercado Pago Checkout ou da API de tokens do Mercado Pago. Em ambiente sandbox, você pode usar cartões de teste do Mercado Pago.
 
 ---
 

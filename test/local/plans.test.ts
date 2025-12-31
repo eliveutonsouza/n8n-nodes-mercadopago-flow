@@ -6,7 +6,7 @@
  * para garantir que estamos testando exatamente o que será publicado no npm
  */
 
-import { PixPayment } from "../../dist/nodes/PixPayment/PixPayment.node";
+import { PaymentMercadoPago } from "../../dist/nodes/PaymentMercadoPago/PaymentMercadoPago.node";
 import { LocalExecuteFunctions } from "../helpers/local-execute-functions";
 import {
   loadCredentialsFromEnv,
@@ -20,7 +20,7 @@ async function testCreatePlan() {
   const credentials = loadCredentialsFromEnv();
   displayCredentialsInfo(credentials);
 
-  const node = new PixPayment();
+  const node = new PaymentMercadoPago();
   const executeFunctions = new LocalExecuteFunctions(credentials);
 
   // Valores exatos fornecidos pelo usuário (simulando preenchimento no n8n)
@@ -90,7 +90,7 @@ async function testGetPlan(planId: string) {
   console.log(`📝 Plan ID: ${planId}\n`);
 
   const credentials = loadCredentialsFromEnv();
-  const node = new PixPayment();
+  const node = new PaymentMercadoPago();
   const executeFunctions = new LocalExecuteFunctions(credentials);
 
   executeFunctions.setParams({
@@ -128,7 +128,7 @@ async function testListPlans() {
   console.log("\n🧪 Teste: Listar Planos\n");
 
   const credentials = loadCredentialsFromEnv();
-  const node = new PixPayment();
+  const node = new PaymentMercadoPago();
   const executeFunctions = new LocalExecuteFunctions(credentials);
 
   executeFunctions.setParams({
@@ -166,7 +166,7 @@ async function testUpdatePlan(planId: string) {
   console.log(`📝 Plan ID: ${planId}\n`);
 
   const credentials = loadCredentialsFromEnv();
-  const node = new PixPayment();
+  const node = new PaymentMercadoPago();
   const executeFunctions = new LocalExecuteFunctions(credentials);
 
   executeFunctions.setParams({

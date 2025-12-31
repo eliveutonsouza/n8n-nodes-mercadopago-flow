@@ -7,7 +7,7 @@ import {
 	INodeExecutionData,
 } from 'n8n-workflow';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { MercadoPagoCredentials } from '../../nodes/PixPayment/types';
+import { MercadoPagoCredentials } from '../../nodes/PaymentMercadoPago/types';
 
 interface RequestOptions extends AxiosRequestConfig {
 	json?: boolean;
@@ -44,7 +44,7 @@ export class LocalExecuteFunctions implements Partial<IExecuteFunctions> {
 		type: string,
 		_itemIndex?: number,
 	): Promise<T> {
-		if (type === 'pixPaymentApi') {
+		if (type === 'paymentMercadoPagoAPI') {
 			return this.credentials as T;
 		}
 		throw new Error(`Credential type ${type} not found`);

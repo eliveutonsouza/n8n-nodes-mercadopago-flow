@@ -2,18 +2,18 @@
  * Testes de integração para Pagamentos Recorrentes
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import { mockSubscriptionResponse } from '../mocks/mercado-pago-mocks';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 
 describe('Recurring Payments Integration Tests', () => {
-	let node: PixPayment;
+	let node: PaymentMercadoPago;
 	let mockExecuteFunctions: MockExecuteFunctions;
 	const baseUrl = 'https://api.mercadopago.com';
 
 	beforeEach(() => {
-		node = new PixPayment();
+		node = new PaymentMercadoPago();
 		mockExecuteFunctions = createMockExecuteFunctions();
 	});
 
@@ -42,7 +42,7 @@ describe('Recurring Payments Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/plan-123`,
@@ -76,7 +76,7 @@ describe('Recurring Payments Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/recurring-123`,
@@ -115,7 +115,7 @@ describe('Recurring Payments Integration Tests', () => {
 			expect(result).toBeDefined();
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/search`,
@@ -149,7 +149,7 @@ describe('Recurring Payments Integration Tests', () => {
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'GET',
 					url: `${baseUrl}/preapproval/search?payer_id=customer-123`,
@@ -184,7 +184,7 @@ describe('Recurring Payments Integration Tests', () => {
 			expect(result[0][0].json.status).toBe('cancelled');
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
 				expect.anything(),
-				'pixPaymentApi',
+				'paymentMercadoPagoAPI',
 				expect.objectContaining({
 					method: 'PUT',
 					body: { status: 'cancelled' },

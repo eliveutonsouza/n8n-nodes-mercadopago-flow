@@ -3,7 +3,7 @@
  * Executa testes reais contra a API do Mercado Pago
  */
 
-import { PixPayment } from '../../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { LocalExecuteFunctions } from '../helpers/local-execute-functions';
 import { loadCredentialsFromEnv, displayCredentialsInfo } from '../helpers/env-loader';
 
@@ -14,7 +14,7 @@ async function testCreateSubscription(planId: string) {
 	const credentials = loadCredentialsFromEnv();
 	displayCredentialsInfo(credentials);
 
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -56,7 +56,7 @@ async function testGetSubscription(subscriptionId: string) {
 	console.log(`📝 Subscription ID: ${subscriptionId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -95,7 +95,7 @@ async function testPauseSubscription(subscriptionId: string) {
 	console.log(`📝 Subscription ID: ${subscriptionId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -134,7 +134,7 @@ async function testResumeSubscription(subscriptionId: string) {
 	console.log(`📝 Subscription ID: ${subscriptionId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -173,7 +173,7 @@ async function testCancelSubscription(subscriptionId: string) {
 	console.log(`📝 Subscription ID: ${subscriptionId}\n`);
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({
@@ -211,7 +211,7 @@ async function testListSubscriptions() {
 	console.log('\n🧪 Teste: Listar Assinaturas\n');
 
 	const credentials = loadCredentialsFromEnv();
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 	const executeFunctions = new LocalExecuteFunctions(credentials);
 
 	executeFunctions.setParams({

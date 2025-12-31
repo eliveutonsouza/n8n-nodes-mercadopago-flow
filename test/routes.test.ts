@@ -3,22 +3,22 @@
  * Este script verifica a estrutura e validação das rotas sem fazer requisições reais
  */
 
-import { PixPayment } from '../nodes/PixPayment/PixPayment.node';
+import { PaymentMercadoPago } from '../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 
 describe('Validação de Rotas do Mercado Pago', () => {
-	const node = new PixPayment();
+	const node = new PaymentMercadoPago();
 
 	describe('Estrutura do Node', () => {
 		it('deve ter a descrição correta', () => {
 			expect(node.description).toBeDefined();
-			expect(node.description.name).toBe('pixPayment');
+			expect(node.description.name).toBe('paymentMercadoPago');
 			expect(node.description.displayName).toBe('Mercado Pago PIX e Assinaturas');
 		});
 
 		it('deve ter credenciais configuradas', () => {
 			expect(node.description.credentials).toBeDefined();
 			expect(node.description.credentials?.length).toBeGreaterThan(0);
-			expect(node.description.credentials?.[0].name).toBe('pixPaymentApi');
+			expect(node.description.credentials?.[0].name).toBe('paymentMercadoPagoAPI');
 		});
 
         it('deve ter recursos definidos', () => {
@@ -152,7 +152,7 @@ describe('Validação de Rotas do Mercado Pago', () => {
 // Validação manual das rotas
 console.log('🔍 Validando estrutura das rotas...\n');
 
-const node = new PixPayment();
+const node = new PaymentMercadoPago();
 const properties = node.description.properties || [];
 
 // Listar todos os recursos
