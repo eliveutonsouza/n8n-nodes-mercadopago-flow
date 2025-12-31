@@ -23,6 +23,7 @@ async function testCreateSubscription(planId: string) {
 		planId,
 		payerEmail: 'test@example.com',
 		payerDocument: '12345678901',
+		subscriptionStatus: 'pending', // Testar criação sem cartão (retorna init_point)
 	});
 
 	executeFunctions.setInputData([

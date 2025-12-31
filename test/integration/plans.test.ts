@@ -20,7 +20,7 @@ describe('Plans Integration Tests', () => {
 	describe('createPlan', () => {
 		it('deve criar plano com sucesso', async () => {
 			// Arrange
-			mockExecuteFunctions.getNodeParameter.mockImplementation((name: string) => {
+			mockExecuteFunctions.getNodeParameter.mockImplementation((name: string, _index: number, defaultValue?: any) => {
 				const params: { [key: string]: any } = {
 					resource: 'plans',
 					operation: 'create',
@@ -28,8 +28,10 @@ describe('Plans Integration Tests', () => {
 					amount: mockPlanData.amount,
 					frequency: mockPlanData.frequency,
 					frequencyType: mockPlanData.frequencyType,
+					currencyId: 'BRL',
+					backUrl: 'https://www.mercadopago.com.br',
 				};
-				return params[name];
+				return params[name] !== undefined ? params[name] : defaultValue;
 			});
 
 			mockExecuteFunctions.helpers.requestWithAuthentication.call.mockResolvedValue(
@@ -37,17 +39,8 @@ describe('Plans Integration Tests', () => {
 			);
 
 			// Act
-			const result = await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'create',
-						},
-					},
-				],
-				0,
+			const result = await node.execute.call(
+				mockExecuteFunctions as any,
 			);
 
 			// Assert
@@ -89,18 +82,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'create',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('Valor do plano deve ser maior que zero');
 		});
 
@@ -120,18 +102,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'create',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('Frequência deve ser maior que zero');
 		});
 
@@ -151,18 +122,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'create',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('Tipo de frequência deve ser "days" ou "months"');
 		});
 
@@ -182,18 +142,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'create',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('Nome do plano é obrigatório');
 		});
 
@@ -216,18 +165,7 @@ describe('Plans Integration Tests', () => {
 			);
 
 			// Act
-			await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'create',
-						},
-					},
-				],
-				0,
-			);
+			await node.execute.call(mockExecuteFunctions as any);
 
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
@@ -266,18 +204,7 @@ describe('Plans Integration Tests', () => {
 			});
 
 			// Act
-			await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'create',
-						},
-					},
-				],
-				0,
-			);
+			await node.execute.call(mockExecuteFunctions as any);
 
 			// Assert - verifica que a vírgula foi convertida para ponto e enviada em formato decimal
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
@@ -311,18 +238,7 @@ describe('Plans Integration Tests', () => {
 			);
 
 			// Act
-			const result = await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'get',
-						},
-					},
-				],
-				0,
-			);
+			const result = await node.execute.call(mockExecuteFunctions as any);
 
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
@@ -350,18 +266,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'get',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('ID do plano é obrigatório');
 		});
 	});
@@ -382,18 +287,7 @@ describe('Plans Integration Tests', () => {
 			);
 
 			// Act
-			const result = await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'list',
-						},
-					},
-				],
-				0,
-			);
+			const result = await node.execute.call(mockExecuteFunctions as any);
 
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
@@ -404,8 +298,10 @@ describe('Plans Integration Tests', () => {
 					url: `${baseUrl}/preapproval_plan/search`,
 				}),
 			);
-			expect(result[0][0].json.raw.results.length).toBe(1);
-			expect(result[0][0].json.raw.results[0].id).toBe(mockPlanResponse.id);
+			const rawData = result[0][0].json.raw as any;
+			expect(rawData.results).toBeDefined();
+			expect(rawData.results.length).toBe(1);
+			expect(rawData.results[0].id).toBe(mockPlanResponse.id);
 		});
 	});
 
@@ -417,8 +313,8 @@ describe('Plans Integration Tests', () => {
 					resource: 'plans',
 					operation: 'update',
 					planId: mockPlanResponse.id,
-					reason: 'Plano Atualizado',
-					amount: 149.99,
+					updateReason: 'Plano Atualizado',
+					updateAmount: 149.99,
 				};
 				return params[name];
 			});
@@ -433,18 +329,7 @@ describe('Plans Integration Tests', () => {
 			});
 
 			// Act
-			const result = await (node.execute as any).call(
-				mockExecuteFunctions,
-				[
-					{
-						json: {
-							resource: 'plans',
-							operation: 'update',
-						},
-					},
-				],
-				0,
-			);
+			const result = await node.execute.call(mockExecuteFunctions as any);
 
 			// Assert
 			expect(mockExecuteFunctions.helpers.requestWithAuthentication.call).toHaveBeenCalledWith(
@@ -478,18 +363,7 @@ describe('Plans Integration Tests', () => {
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'update',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('ID do plano é obrigatório');
 		});
 
@@ -500,26 +374,15 @@ describe('Plans Integration Tests', () => {
 					resource: 'plans',
 					operation: 'update',
 					planId: mockPlanResponse.id,
-					reason: '', // Empty reason
-					amount: 0, // Invalid amount
+					updateReason: '', // Empty reason
+					updateAmount: 0, // Invalid amount
 				};
 				return params[name];
 			});
 
 			// Act & Assert
 			await expect(
-				(node.execute as any).call(
-					mockExecuteFunctions,
-					[
-						{
-							json: {
-								resource: 'plans',
-								operation: 'update',
-							},
-						},
-					],
-					0,
-				),
+				node.execute.call(mockExecuteFunctions as any),
 			).rejects.toThrow('É necessário fornecer pelo menos um campo para atualizar');
 		});
 	});

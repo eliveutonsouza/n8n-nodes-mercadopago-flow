@@ -115,7 +115,7 @@ export const mockPlanResponse: Plan = {
 	auto_recurring: {
 		frequency: 1,
 		frequency_type: 'months',
-		transaction_amount: 9999,
+		transaction_amount: 99.99, // API retorna em formato decimal para planos
 		currency_id: 'BRL',
 	},
 	payment_methods_allowed: {

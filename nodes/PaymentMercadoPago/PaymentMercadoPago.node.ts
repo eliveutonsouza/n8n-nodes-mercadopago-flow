@@ -338,16 +338,18 @@ export class PaymentMercadoPago implements INodeType {
         ).catch(() => {});
         // #endregion
         const errorData = handleMercadoPagoError(error);
+        const errorMessage =
+          errorData?.message || (error as any)?.message || "Erro desconhecido";
         if (this.continueOnFail()) {
           returnData.push({
             json: {
-              error: errorData.message,
-              status: errorData.status,
-              details: errorData,
+              error: errorMessage,
+              status: errorData?.status || 500,
+              details: errorData || error,
             },
           });
         } else {
-          throw new Error(errorData.message);
+          throw new Error(errorMessage);
         }
       }
     }

@@ -219,12 +219,24 @@ export class PlansResource implements IResourceHandler {
     }
 
     // Construir payment_methods_allowed
+    // Garantir que paymentTypes e paymentMethods sejam arrays
+    const paymentTypesArray = Array.isArray(paymentTypes)
+      ? paymentTypes
+      : paymentTypes
+      ? [paymentTypes]
+      : ["credit_card"];
+    const paymentMethodsArray = Array.isArray(paymentMethods)
+      ? paymentMethods
+      : paymentMethods
+      ? [paymentMethods]
+      : [];
+
     const paymentMethodsAllowed: any = {
-      payment_types: paymentTypes.map((id) => ({ id })),
+      payment_types: paymentTypesArray.map((id) => ({ id })),
     };
 
-    if (paymentMethods.length > 0) {
-      paymentMethodsAllowed.payment_methods = paymentMethods.map((id) => ({
+    if (paymentMethodsArray.length > 0) {
+      paymentMethodsAllowed.payment_methods = paymentMethodsArray.map((id) => ({
         id,
       }));
     }
@@ -359,4 +371,3 @@ export class PlansResource implements IResourceHandler {
     return response as Plan;
   }
 }
-

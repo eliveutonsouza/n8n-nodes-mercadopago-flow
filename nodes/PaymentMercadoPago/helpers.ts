@@ -47,6 +47,14 @@ export function formatDate(date: Date | string): string {
  * Normaliza erros da API do Mercado Pago para formato legível
  */
 export function handleMercadoPagoError(error: any): MercadoPagoError {
+	// Garantir que sempre retornamos um objeto válido
+	if (!error) {
+		return {
+			message: 'Erro desconhecido',
+			status: 500,
+		};
+	}
+
 	if (error.response) {
 		// Erro HTTP com resposta
 		const status = error.response.status || error.statusCode || 500;

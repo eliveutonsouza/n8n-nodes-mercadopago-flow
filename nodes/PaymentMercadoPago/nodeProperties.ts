@@ -686,7 +686,35 @@ export function getNodeProperties(): INodeProperties[] {
       },
       default: "",
       description:
-        "Token do cartão de crédito (obtido via Mercado Pago Checkout). Se não fornecido, a API retornará um init_point para checkout",
+        "Token do cartão de crédito (obtido via Mercado Pago Checkout no front-end). Se não fornecido, a assinatura será criada com status 'pending' e retornará um init_point para checkout",
+    },
+    {
+      displayName: "Status da Assinatura",
+      name: "subscriptionStatus",
+      type: "options",
+      displayOptions: {
+        show: {
+          resource: ["subscriptions"],
+          operation: ["create"],
+        },
+      },
+      options: [
+        {
+          name: "Pending (sem cartão - retorna init_point)",
+          value: "pending",
+          description:
+            "Assinatura pendente, retorna init_point para checkout (não requer card_token_id)",
+        },
+        {
+          name: "Authorized (com cartão)",
+          value: "authorized",
+          description:
+            "Assinatura ativa imediatamente (requer card_token_id obrigatório)",
+        },
+      ],
+      default: "pending",
+      description:
+        "Status inicial da assinatura. 'pending' permite criar sem card_token_id e retorna init_point para checkout",
     },
     // Subscription Get/Cancel/Pause/Resume Fields
     {

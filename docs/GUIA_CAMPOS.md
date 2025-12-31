@@ -121,11 +121,12 @@ Cria uma nova assinatura baseada em um plano existente.
 | ID do Plano | string | ✅ Sim | ID do plano de assinatura | `"PLAN_123456"` |
 | E-mail do Pagador | string | ✅ Sim | E-mail do pagador | `"cliente@exemplo.com"` |
 | CPF/CNPJ do Pagador | string | ❌ Não | CPF ou CNPJ do pagador | `"12345678909"` |
-| Token do Cartão | string | ✅ Sim | Token do cartão de crédito (obtido via Mercado Pago Checkout) | `"abc123def456"` |
+| Token do Cartão | string | ❌ Não | Token do cartão de crédito (obtido via Mercado Pago Checkout no front-end). Se não fornecido, a assinatura será criada com status "pending" | `"abc123def456"` |
+| Status da Assinatura | options | ❌ Não | Status inicial: "pending" (sem cartão, retorna init_point) ou "authorized" (com cartão, requer card_token_id) | `"pending"` |
 | Data de Início | dateTime | ❌ Não | Data de início da assinatura | `"2024-01-01T00:00:00.000Z"` |
 | Período de Trial (dias) | number | ❌ Não | Número de dias de período de trial | `7` |
 
-#### Exemplo JSON Completo
+#### Exemplo JSON Completo (Com Cartão - Status Authorized)
 
 ```json
 {
@@ -135,6 +136,22 @@ Cria uma nova assinatura baseada em um plano existente.
   "payerEmail": "cliente@exemplo.com",
   "payerDocument": "12345678909",
   "cardTokenId": "abc123def456",
+  "subscriptionStatus": "authorized",
+  "startDate": "2024-01-01T00:00:00.000Z",
+  "trialPeriodDays": 7
+}
+```
+
+#### Exemplo JSON (Sem Cartão - Status Pending)
+
+```json
+{
+  "resource": "subscriptions",
+  "operation": "create",
+  "planId": "PLAN_123456",
+  "payerEmail": "cliente@exemplo.com",
+  "payerDocument": "12345678909",
+  "subscriptionStatus": "pending",
   "startDate": "2024-01-01T00:00:00.000Z",
   "trialPeriodDays": 7
 }
@@ -147,12 +164,27 @@ Cria uma nova assinatura baseada em um plano existente.
   "resource": "subscriptions",
   "operation": "create",
   "planId": "PLAN_123456",
-  "payerEmail": "cliente@exemplo.com",
-  "cardTokenId": "abc123def456"
+  "payerEmail": "cliente@exemplo.com"
 }
 ```
 
-**⚠️ Nota Importante:** Para criar assinaturas baseadas em planos, o `cardTokenId` é obrigatório. O token do cartão deve ser obtido através do Mercado Pago Checkout ou da API de tokens do Mercado Pago. Em ambiente sandbox, você pode usar cartões de teste do Mercado Pago.
+**📝 Notas Importantes:**
+
+1. **Fluxo com Cartão (Authorized):**
+   - Forneça `cardTokenId` e `subscriptionStatus: "authorized"`
+   - A assinatura será ativada imediatamente
+   - O `cardTokenId` deve ser obtido no **front-end** usando a PUBLIC_KEY do Mercado Pago através do Checkout Transparente
+
+2. **Fluxo sem Cartão (Pending):**
+   - Não forneça `cardTokenId` e use `subscriptionStatus: "pending"`
+   - A API retornará um `init_point` (URL de checkout)
+   - Envie o `init_point` ao cliente para que ele complete o pagamento
+   - Após o pagamento, a assinatura será ativada automaticamente
+
+3. **Como obter o card_token_id:**
+   - O token **não pode** ser gerado no backend
+   - Deve ser obtido no navegador usando o SDK do Mercado Pago
+   - Veja a documentação do [Checkout Transparente](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-configuration/card-form)
 
 ---
 

@@ -122,6 +122,12 @@ export class SubscriptionsResource implements IResourceHandler {
       itemIndex,
       ""
     ) as string;
+    const subscriptionStatus = getNodeParameterSafe(
+      executeFunctions.getNodeParameter.bind(executeFunctions),
+      "subscriptionStatus",
+      itemIndex,
+      "pending"
+    ) as string;
 
     // #region agent log
     fetch("http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9", {
@@ -137,6 +143,7 @@ export class SubscriptionsResource implements IResourceHandler {
           startDate: startDate,
           trialPeriodDays: trialPeriodDays,
           cardTokenId: cardTokenId ? "provided" : "not provided",
+          subscriptionStatus: subscriptionStatus,
         },
         timestamp: Date.now(),
         sessionId: "debug-session",
@@ -155,10 +162,14 @@ export class SubscriptionsResource implements IResourceHandler {
       payer_email: payerEmail,
     };
 
-    // card_token_id é obrigatório para criar assinatura
-    // Se não fornecido, a API pode retornar erro ou init_point para checkout
+    // Se card_token_id foi fornecido, usar status "authorized"
+    // Se não foi fornecido, usar status "pending" para retornar init_point
     if (cardTokenId && cardTokenId.trim() !== "") {
       body.card_token_id = cardTokenId.trim();
+      body.status = "authorized";
+    } else {
+      // Sem card_token_id, criar com status "pending" para obter init_point
+      body.status = subscriptionStatus || "pending";
     }
 
     if (payerDocument && payerDocument.trim() !== "") {
@@ -248,14 +259,16 @@ export class SubscriptionsResource implements IResourceHandler {
       }).catch(() => {});
       // #endregion
 
-      // Se o erro for sobre card_token_id e não foi fornecido, fornecer mensagem mais clara
+      // Se o erro for sobre card_token_id e status é "authorized"
       if (
         error?.response?.data?.message?.includes("card_token_id") &&
+        body.status === "authorized" &&
         !body.card_token_id
       ) {
         throw new Error(
-          `Para criar uma assinatura, é necessário fornecer um Token do Cartão (card_token_id). ` +
-            `O token pode ser obtido através do Mercado Pago Checkout. ` +
+          `Para criar uma assinatura com status "authorized", é necessário fornecer um Token do Cartão (card_token_id). ` +
+            `O token deve ser obtido no front-end usando a PUBLIC_KEY do Mercado Pago através do Checkout Transparente. ` +
+            `Alternativamente, você pode criar a assinatura com status "pending" (sem card_token_id) e receber um init_point para checkout. ` +
             `Erro da API: ${error.response.data.message}`
         );
       }
