@@ -99,6 +99,14 @@ export class SubscriptionsResource implements IResourceHandler {
       itemIndex
     ) as string;
 
+    // Validação explícita de campos obrigatórios
+    if (!planId || (typeof planId === 'string' && planId.trim() === '')) {
+      throw new Error(
+        "ID do Plano (planId) é obrigatório. " +
+        "Verifique se o campo 'ID do Plano' está preenchido corretamente no nó ou se a expressão {{ $json.body.planId }} está retornando um valor válido."
+      );
+    }
+
     // Usar getNodeParameterSafe para campos opcionais
     const payerDocument = getNodeParameterSafe(
       executeFunctions.getNodeParameter.bind(executeFunctions),
@@ -129,6 +137,12 @@ export class SubscriptionsResource implements IResourceHandler {
       "subscriptionStatus",
       itemIndex,
       "pending"
+    ) as string;
+    const backUrl = getNodeParameterSafe(
+      executeFunctions.getNodeParameter.bind(executeFunctions),
+      "backUrl",
+      itemIndex,
+      ""
     ) as string;
 
     // #region agent log
@@ -167,6 +181,10 @@ export class SubscriptionsResource implements IResourceHandler {
       preapproval_plan_id: planId,
       payer_email: payerEmail,
     };
+
+    if (backUrl && backUrl.trim() !== "") {
+      body.back_url = backUrl.trim();
+    }
 
     // Validação: Se status é "authorized", card_token_id é obrigatório
     if (subscriptionStatus === "authorized" && (!cardTokenId || cardTokenId.trim() === "")) {

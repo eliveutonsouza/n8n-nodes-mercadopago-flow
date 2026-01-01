@@ -716,6 +716,20 @@ export function getNodeProperties(): INodeProperties[] {
       description:
         "Status inicial da assinatura. 'pending' permite criar sem card_token_id e retorna init_point para checkout",
     },
+    {
+      displayName: "URL de Retorno",
+      name: "backUrl",
+      type: "string",
+      displayOptions: {
+        show: {
+          resource: ["subscriptions"],
+          operation: ["create"],
+        },
+      },
+      default: "",
+      description:
+        "URL de retorno após o checkout (opcional). Recomendado quando assinatura é criada com status 'pending' para redirecionar o cliente após o pagamento.",
+    },
     // Subscription Get/Cancel/Pause/Resume Fields
     {
       displayName: "ID da Assinatura",

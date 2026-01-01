@@ -275,6 +275,23 @@ export class PaymentMercadoPago implements INodeType {
               );
             }
           }
+          // Tratamento específico para erros de parâmetros em assinaturas
+          if (resource === "subscriptions") {
+            if (
+              planError?.message?.includes("Could not get parameter") ||
+              planError?.message?.toLowerCase().includes("parameter") ||
+              planError?.message?.includes("Bad request") ||
+              planError?.message?.includes("obrigatório")
+            ) {
+              throw new Error(
+                `Erro ao obter parâmetros para criar assinatura. ` +
+                  `Verifique se todos os campos obrigatórios estão preenchidos: ` +
+                  `ID do Plano (planId) e E-mail do Pagador (payerEmail). ` +
+                  `Se estiver usando expressões como {{ $json.body.* }}, verifique se os valores estão sendo resolvidos corretamente. ` +
+                  `Detalhes: ${planError.message}`
+              );
+            }
+          }
           throw planError;
         }
 
