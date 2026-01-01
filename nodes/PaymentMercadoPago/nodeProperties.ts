@@ -21,10 +21,6 @@ export function getNodeProperties(): INodeProperties[] {
           value: "subscriptions",
         },
         {
-          name: "Pagamento Recorrente",
-          value: "recurringPayments",
-        },
-        {
           name: "Webhook",
           value: "webhooks",
         },
@@ -744,87 +740,6 @@ export function getNodeProperties(): INodeProperties[] {
       },
       default: "",
       description: "ID da assinatura",
-    },
-    // Recurring Payment Operations
-    {
-      displayName: "Operation",
-      name: "operation",
-      type: "options",
-      noDataExpression: true,
-      displayOptions: {
-        show: {
-          resource: ["recurringPayments"],
-        },
-      },
-      options: [
-        {
-          name: "Criar",
-          value: "create",
-          description: "Criar um pagamento recorrente",
-          action: "Criar pagamento recorrente",
-        },
-        {
-          name: "Listar",
-          value: "list",
-          description: "Listar pagamentos recorrentes",
-          action: "Listar pagamentos recorrentes",
-        },
-        {
-          name: "Cancelar",
-          value: "cancel",
-          description: "Cancelar um pagamento recorrente",
-          action: "Cancelar pagamento recorrente",
-        },
-        {
-          name: "Consultar",
-          value: "get",
-          description: "Consultar um pagamento recorrente",
-          action: "Consultar pagamento recorrente",
-        },
-      ],
-      default: "create",
-    },
-    // Recurring Payment Fields
-    {
-      displayName: "ID do Plano",
-      name: "planId",
-      type: "string",
-      required: true,
-      displayOptions: {
-        show: {
-          resource: ["recurringPayments"],
-          operation: ["create"],
-        },
-      },
-      default: "",
-      description: "ID do plano de pagamento recorrente",
-    },
-    {
-      displayName: "ID do Cliente",
-      name: "customerId",
-      type: "string",
-      displayOptions: {
-        show: {
-          resource: ["recurringPayments"],
-          operation: ["create", "list", "get"],
-        },
-      },
-      default: "",
-      description: "ID do cliente (filtro opcional)",
-    },
-    {
-      displayName: "ID do Pagamento Recorrente",
-      name: "recurringPaymentId",
-      type: "string",
-      required: true,
-      displayOptions: {
-        show: {
-          resource: ["recurringPayments"],
-          operation: ["get", "cancel"],
-        },
-      },
-      default: "",
-      description: "ID do pagamento recorrente",
     },
     // Webhook Operations
     {

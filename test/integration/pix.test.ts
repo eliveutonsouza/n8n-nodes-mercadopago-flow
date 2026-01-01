@@ -144,7 +144,7 @@ describe('PIX Integration Tests', () => {
 			expect(callArgs[2].headers['X-Idempotency-Key']).toBe('IDEMPOTENCY-KEY-123');
 		});
 
-		it('deve normalizar valor para centavos', async () => {
+		it('deve usar valor em formato decimal (não centavos)', async () => {
 			// Arrange
 			mockExecuteFunctions.getNodeParameter.mockImplementation((name: string) => {
 				const params: { [key: string]: any } = {
@@ -166,7 +166,8 @@ describe('PIX Integration Tests', () => {
 
 			// Assert
 			const callArgs = mockExecuteFunctions.helpers.requestWithAuthentication.call.mock.calls[0];
-			expect(callArgs[2].body.transaction_amount).toBe(1050);
+			// NOTA: A API do Mercado Pago espera transaction_amount em formato decimal (não centavos)
+			expect(callArgs[2].body.transaction_amount).toBe(10.5);
 		});
 	});
 
@@ -293,7 +294,8 @@ describe('PIX Integration Tests', () => {
 
 			// Assert
 			const callArgs = mockExecuteFunctions.helpers.requestWithAuthentication.call.mock.calls[0];
-			expect(callArgs[2].body.amount).toBe(550);
+			// NOTA: A API do Mercado Pago espera amount em formato decimal (não centavos)
+			expect(callArgs[2].body.amount).toBe(5.5);
 		});
 
 		it('deve validar paymentId obrigatório', async () => {

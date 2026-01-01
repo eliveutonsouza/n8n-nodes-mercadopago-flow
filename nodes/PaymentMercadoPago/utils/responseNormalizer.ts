@@ -3,11 +3,26 @@ import { NormalizedResponse } from "../types";
 /**
  * Normaliza a resposta da API do Mercado Pago para um formato padronizado
  */
+/**
+ * Mapeia o resource do node para o type normalizado
+ */
+function getResourceType(resource: string): string {
+  const typeMap: Record<string, string> = {
+    pix: "payment",
+    plans: "plan",
+    subscriptions: "subscription",
+    webhooks: "webhook",
+  };
+  return typeMap[resource] || resource;
+}
+
 export function normalizeResponse(
   data: any,
   resource: string
 ): NormalizedResponse {
   const normalized: NormalizedResponse = {
+    provider: "mercado_pago",
+    type: getResourceType(resource),
     id: data.id || "",
     status: data.status || "",
     createdAt:
@@ -18,9 +33,9 @@ export function normalizeResponse(
   // Normalização específica por recurso
   switch (resource) {
     case "pix":
-      normalized.amount = data.transaction_amount
-        ? data.transaction_amount / 100
-        : undefined;
+      // NOTA: A API do Mercado Pago retorna transaction_amount em formato decimal (não centavos)
+      // Exemplo: 49.90 (não 4990), então não precisa dividir por 100
+      normalized.amount = data.transaction_amount;
       normalized.currency = data.currency_id || "BRL";
       normalized.qrCode =
         data.point_of_interaction?.transaction_data?.qr_code;
@@ -48,12 +63,6 @@ export function normalizeResponse(
       if (data.init_point || data.sandbox_init_point) {
         normalized.url = data.init_point || data.sandbox_init_point;
       }
-      break;
-
-    case "recurringPayments":
-      normalized.planId = data.preapproval_plan_id;
-      normalized.payerEmail = data.payer_email;
-      normalized.nextBillingDate = data.next_billing_date;
       break;
 
     case "webhooks":

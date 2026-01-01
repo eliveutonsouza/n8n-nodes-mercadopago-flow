@@ -12,7 +12,6 @@ import { IResourceHandler } from "./resources/ResourceHandler";
 import { PixResource } from "./resources/PixResource";
 import { PlansResource } from "./resources/PlansResource";
 import { SubscriptionsResource } from "./resources/SubscriptionsResource";
-import { RecurringPaymentsResource } from "./resources/RecurringPaymentsResource";
 import { WebhooksResource } from "./resources/WebhooksResource";
 import { getNodeProperties } from "./nodeProperties";
 
@@ -50,7 +49,6 @@ export class PaymentMercadoPago implements INodeType {
       ["pix", new PixResource()],
       ["plans", new PlansResource()],
       ["subscriptions", new SubscriptionsResource()],
-      ["recurringPayments", new RecurringPaymentsResource()],
       ["webhooks", new WebhooksResource()],
     ]);
     return handlers.get(resource);

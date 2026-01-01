@@ -2,7 +2,7 @@ import { IExecuteFunctions } from "n8n-workflow";
 import { MercadoPagoCredentials, Payment } from "../types";
 import { IResourceHandler } from "./ResourceHandler";
 import {
-  normalizeAmount,
+  normalizeNumericValue,
   cleanDocument,
   getDocumentType,
   validateEmail,
@@ -60,10 +60,12 @@ export class PixResource implements IResourceHandler {
     // #region agent log
     fetch('http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PixResource.ts:54',message:'createPixPayment: entry',data:{baseUrl:baseUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
     // #endregion
-    const amount = executeFunctions.getNodeParameter(
+    // Normaliza valores numéricos (converte vírgula para ponto)
+    const amountRaw = executeFunctions.getNodeParameter(
       "amount",
       itemIndex
-    ) as number;
+    ) as number | string;
+    const amount = normalizeNumericValue(amountRaw);
     const description = executeFunctions.getNodeParameter(
       "description",
       itemIndex
@@ -117,8 +119,10 @@ export class PixResource implements IResourceHandler {
       throw new Error("Valor do pagamento deve ser maior que zero");
     }
 
+    // NOTA: A API do Mercado Pago espera transaction_amount em formato decimal (não centavos)
+    // Exemplo: 49.90 (não 4990)
     const body: any = {
-      transaction_amount: normalizeAmount(amount),
+      transaction_amount: amount,
       description,
       payment_method_id: "pix",
       payer: {
@@ -231,8 +235,9 @@ export class PixResource implements IResourceHandler {
 
     const body: any = {};
 
+    // NOTA: A API do Mercado Pago espera amount em formato decimal (não centavos)
     if (refundAmount && refundAmount > 0) {
-      body.amount = normalizeAmount(refundAmount);
+      body.amount = normalizeNumericValue(refundAmount);
     }
 
     const response = await makeAuthenticatedRequest(

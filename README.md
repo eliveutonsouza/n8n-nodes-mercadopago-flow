@@ -185,17 +185,6 @@ Gerencia o status de uma assinatura existente.
 
 Consulta uma assinatura específica ou lista todas as assinaturas.
 
-### Pagamentos Recorrentes
-
-Gerencia pagamentos recorrentes com histórico e próxima cobrança.
-
-**Operações disponíveis:**
-
-- Criar
-- Listar
-- Cancelar
-- Consultar
-
 ### Webhooks - Registrar
 
 Registra um novo webhook para receber notificações de eventos.
@@ -288,6 +277,21 @@ O campo `raw` contém a resposta completa da API do Mercado Pago para acesso a t
 - Verifique os logs do Mercado Pago no painel de desenvolvedores
 
 ## 📚 Documentação Adicional
+
+### Documentação Técnica do Node
+
+- [Diagramas de Arquitetura](./docs/DIAGRAMAS_ARQUITETURA.md) - Visão completa dos fluxos de Assinatura (cartão) e PIX (recorrência manual) com diagramas Mermaid
+- [Payloads Exatos da API](./docs/PAYLOADS_API.md) - Especificação técnica completa de todos os payloads por operação
+- [Schema do Node n8n](./docs/SCHEMA_NODE.md) - Modelagem completa do schema, campos por operação e output normalizado
+
+### Documentação de Uso
+
+- [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md) - Exemplos detalhados de preenchimento de todos os campos
+- [Integração Frontend n8n](./docs/INTEGRACAO_FRONTEND_N8N.md) - Como integrar o frontend com o n8n
+- [Como Obter Card Token](./docs/COMO_OBTER_CARD_TOKEN.md) - Guia para obter token do cartão no frontend
+- [Webhooks de Assinaturas](./docs/WEBHOOKS_ASSINATURAS.md) - Configuração e processamento de webhooks
+
+### Documentação Oficial do Mercado Pago
 
 - [Documentação do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs)
 - [API de Pagamentos](https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post)

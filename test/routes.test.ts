@@ -28,7 +28,7 @@ describe('Validação de Rotas do Mercado Pago', () => {
           expect(resourceProperty).toBeDefined();
           expect(resourceProperty?.options).toBeDefined();
           if (resourceProperty?.options) {
-            expect((resourceProperty.options as any)?.length).toBe(5);
+            expect((resourceProperty.options as any)?.length).toBe(4);
           }
         });
 	});
@@ -110,24 +110,6 @@ describe('Validação de Rotas do Mercado Pago', () => {
 		});
 	});
 
-	describe('Recurso Pagamentos Recorrentes', () => {
-		it('deve ter operações: create, list, cancel, get', () => {
-			const recurringOperations = ['create', 'list', 'cancel', 'get'];
-			const operationProperty = node.description.properties?.find(
-				(p) =>
-					p.name === 'operation' &&
-					p.displayOptions?.show?.resource?.includes('recurringPayments'),
-			);
-
-			if (operationProperty?.options) {
-				const operations = operationProperty.options.map((opt: any) => opt.value);
-
-				recurringOperations.forEach((op) => {
-					expect(operations).toContain(op);
-				});
-			}
-		});
-	});
 
 	describe('Recurso Webhooks', () => {
 		it('deve ter operações: register, list, delete, get', () => {

@@ -79,17 +79,6 @@ export interface Plan {
 	last_modified?: string;
 }
 
-export interface RecurringPayment {
-	id: string;
-	status: string;
-	plan_id?: string;
-	customer_id?: string;
-	next_billing_date?: string;
-	payment_history?: Payment[];
-	created_at: string;
-	updated_at: string;
-}
-
 export interface Webhook {
 	id: string;
 	url: string;
@@ -133,6 +122,8 @@ export interface MercadoPagoError {
 }
 
 export interface NormalizedResponse {
+	provider: "mercado_pago";
+	type: string;
 	id: string;
 	status: string;
 	amount?: number;
