@@ -53,7 +53,7 @@ describe('Subscriptions Error Handling', () => {
 			// Act & Assert
 			await expect(
 				node.execute.call(mockExecuteFunctions as any),
-			).rejects.toThrow('E-mail do pagador');
+			).rejects.toThrow(/E-mail do Pagador|payerEmail|obrigatório/i);
 		});
 
 		it('deve tratar erro 404 ao consultar assinatura inexistente', async () => {

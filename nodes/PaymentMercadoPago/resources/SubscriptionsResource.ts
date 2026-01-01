@@ -90,20 +90,61 @@ export class SubscriptionsResource implements IResourceHandler {
       }),
     }).catch(() => {});
     // #endregion
-    const planId = executeFunctions.getNodeParameter(
-      "planId",
-      itemIndex
-    ) as string;
-    const payerEmail = executeFunctions.getNodeParameter(
-      "payerEmail",
-      itemIndex
-    ) as string;
+    let planId: string;
+    let payerEmail: string;
+
+    try {
+      planId = executeFunctions.getNodeParameter("planId", itemIndex) as string;
+    } catch (error: any) {
+      const errorMessage = error?.message?.toLowerCase() || '';
+      if (
+        errorMessage.includes('could not get parameter') ||
+        errorMessage.includes('bad request') ||
+        errorMessage.includes('parameter') ||
+        errorMessage.includes('not found')
+      ) {
+        throw new Error(
+          "ID do Plano (planId) é obrigatório. " +
+          "Verifique se o campo 'ID do Plano' está preenchido corretamente no nó. " +
+          "Se estiver usando expressões como {{ $json.body.planId }}, verifique se o valor está sendo resolvido corretamente. " +
+          "Detalhes: " + (error?.message || 'Parâmetro não encontrado')
+        );
+      }
+      throw error;
+    }
+
+    try {
+      payerEmail = executeFunctions.getNodeParameter("payerEmail", itemIndex) as string;
+    } catch (error: any) {
+      const errorMessage = error?.message?.toLowerCase() || '';
+      if (
+        errorMessage.includes('could not get parameter') ||
+        errorMessage.includes('bad request') ||
+        errorMessage.includes('parameter') ||
+        errorMessage.includes('not found')
+      ) {
+        throw new Error(
+          "E-mail do Pagador (payerEmail) é obrigatório. " +
+          "Verifique se o campo 'E-mail do Pagador' está preenchido corretamente no nó. " +
+          "Se estiver usando expressões como {{ $json.body.payerEmail }}, verifique se o valor está sendo resolvido corretamente. " +
+          "Detalhes: " + (error?.message || 'Parâmetro não encontrado')
+        );
+      }
+      throw error;
+    }
 
     // Validação explícita de campos obrigatórios
     if (!planId || (typeof planId === 'string' && planId.trim() === '')) {
       throw new Error(
-        "ID do Plano (planId) é obrigatório. " +
+        "ID do Plano (planId) é obrigatório e não pode estar vazio. " +
         "Verifique se o campo 'ID do Plano' está preenchido corretamente no nó ou se a expressão {{ $json.body.planId }} está retornando um valor válido."
+      );
+    }
+
+    if (!payerEmail || (typeof payerEmail === 'string' && payerEmail.trim() === '')) {
+      throw new Error(
+        "E-mail do Pagador (payerEmail) é obrigatório e não pode estar vazio. " +
+        "Verifique se o campo 'E-mail do Pagador' está preenchido corretamente no nó ou se a expressão {{ $json.body.payerEmail }} está retornando um valor válido."
       );
     }
 

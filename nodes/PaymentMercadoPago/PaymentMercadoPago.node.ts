@@ -279,19 +279,46 @@ export class PaymentMercadoPago implements INodeType {
               );
             }
           }
-          // Tratamento específico para erros de parâmetros em assinaturas
-          if (resource === "subscriptions") {
-            if (
-              planError?.message?.includes("Could not get parameter") ||
-              planError?.message?.toLowerCase().includes("parameter") ||
-              planError?.message?.includes("Bad request") ||
-              planError?.message?.includes("obrigatório")
-            ) {
+          // Tratamento específico para erros de parâmetros
+          const errorMessageLower = planError?.message?.toLowerCase() || '';
+          if (
+            errorMessageLower.includes("could not get parameter") ||
+            errorMessageLower.includes("bad request") ||
+            errorMessageLower.includes("parameter") ||
+            planError?.message?.includes("obrigatório") ||
+            planError?.message?.includes("é obrigatório")
+          ) {
+            // Mensagem mais específica baseada no recurso
+            if (resource === "subscriptions") {
               throw new Error(
                 `${errorContext} Erro ao obter parâmetros para criar assinatura. ` +
                   `Verifique se todos os campos obrigatórios estão preenchidos: ` +
                   `ID do Plano (planId) e E-mail do Pagador (payerEmail). ` +
-                  `Se estiver usando expressões como {{ $json.body.* }}, verifique se os valores estão sendo resolvidos corretamente. ` +
+                  `Se estiver usando expressões como {{ $json.body.planId }} ou {{ $json.body.payerEmail }}, ` +
+                  `verifique se os valores estão sendo resolvidos corretamente no item anterior do workflow. ` +
+                  `Detalhes: ${planError.message}`
+              );
+            } else if (resource === "pix") {
+              throw new Error(
+                `${errorContext} Erro ao obter parâmetros para criar pagamento PIX. ` +
+                  `Verifique se todos os campos obrigatórios estão preenchidos: ` +
+                  `Valor (amount), Descrição (description) e E-mail do Pagador (payerEmail). ` +
+                  `Se estiver usando expressões, verifique se os valores estão sendo resolvidos corretamente. ` +
+                  `Detalhes: ${planError.message}`
+              );
+            } else if (resource === "plans") {
+              throw new Error(
+                `${errorContext} Erro ao obter parâmetros para criar plano. ` +
+                  `Verifique se todos os campos obrigatórios estão preenchidos: ` +
+                  `Nome do Plano (reason), Valor (amount), Frequência (frequency) e Tipo de Frequência (frequencyType). ` +
+                  `Se estiver usando expressões, verifique se os valores estão sendo resolvidos corretamente. ` +
+                  `Detalhes: ${planError.message}`
+              );
+            } else {
+              throw new Error(
+                `${errorContext} Erro ao obter parâmetros. ` +
+                  `Verifique se todos os campos obrigatórios estão preenchidos corretamente. ` +
+                  `Se estiver usando expressões, verifique se os valores estão sendo resolvidos corretamente. ` +
                   `Detalhes: ${planError.message}`
               );
             }

@@ -8,11 +8,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [1.2.0] - 2024-12-31
 
 ### Added
+
 - Campo `reason` (Descrição da Assinatura) na criação de assinaturas
 - Campo `externalReference` (Referência Externa) na criação de assinaturas
 - Suporte completo para campos do corpo HTTP usando expressões n8n
 
 ### Changed
+
 - Payload de criação de assinatura agora inclui `reason` e `external_reference` quando fornecidos
 
 ## [1.1.0] - 2024-12-31
