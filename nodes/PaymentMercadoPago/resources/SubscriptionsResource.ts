@@ -144,6 +144,18 @@ export class SubscriptionsResource implements IResourceHandler {
       itemIndex,
       ""
     ) as string;
+    const reason = getNodeParameterSafe(
+      executeFunctions.getNodeParameter.bind(executeFunctions),
+      "reason",
+      itemIndex,
+      ""
+    ) as string;
+    const externalReference = getNodeParameterSafe(
+      executeFunctions.getNodeParameter.bind(executeFunctions),
+      "externalReference",
+      itemIndex,
+      ""
+    ) as string;
 
     // #region agent log
     fetch("http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9", {
@@ -161,6 +173,8 @@ export class SubscriptionsResource implements IResourceHandler {
           cardTokenId: cardTokenId ? "provided" : "not provided",
           subscriptionStatus: subscriptionStatus,
           backUrl: backUrl || "not provided",
+          reason: reason || "not provided",
+          externalReference: externalReference || "not provided",
         },
         timestamp: Date.now(),
         sessionId: "debug-session",
@@ -182,6 +196,14 @@ export class SubscriptionsResource implements IResourceHandler {
       preapproval_plan_id: planId,
       payer_email: payerEmail,
     };
+
+    if (reason && reason.trim() !== "") {
+      body.reason = reason.trim();
+    }
+
+    if (externalReference && externalReference.trim() !== "") {
+      body.external_reference = externalReference.trim();
+    }
 
     if (backUrl && backUrl.trim() !== "") {
       body.back_url = backUrl.trim();

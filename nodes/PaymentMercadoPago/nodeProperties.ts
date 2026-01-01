@@ -632,6 +632,19 @@ export function getNodeProperties(): INodeProperties[] {
       description: "E-mail do pagador",
     },
     {
+      displayName: "Descrição da Assinatura",
+      name: "reason",
+      type: "string",
+      displayOptions: {
+        show: {
+          resource: ["subscriptions"],
+          operation: ["create"],
+        },
+      },
+      default: "",
+      description: "Descrição ou motivo da assinatura (opcional)",
+    },
+    {
       displayName: "CPF/CNPJ do Pagador",
       name: "payerDocument",
       type: "string",
@@ -725,6 +738,19 @@ export function getNodeProperties(): INodeProperties[] {
       default: "",
       description:
         "URL de retorno após o checkout (opcional). Recomendado quando assinatura é criada com status 'pending' para redirecionar o cliente após o pagamento.",
+    },
+    {
+      displayName: "Referência Externa",
+      name: "externalReference",
+      type: "string",
+      displayOptions: {
+        show: {
+          resource: ["subscriptions"],
+          operation: ["create"],
+        },
+      },
+      default: "",
+      description: "Referência externa para rastreamento (opcional)",
     },
     // Subscription Get/Cancel/Pause/Resume Fields
     {

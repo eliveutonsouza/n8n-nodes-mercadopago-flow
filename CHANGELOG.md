@@ -5,9 +5,20 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2024-12-31
+
+### Added
+- Campo `reason` (Descrição da Assinatura) na criação de assinaturas
+- Campo `externalReference` (Referência Externa) na criação de assinaturas
+- Suporte completo para campos do corpo HTTP usando expressões n8n
+
+### Changed
+- Payload de criação de assinatura agora inclui `reason` e `external_reference` quando fornecidos
+
 ## [1.1.0] - 2024-12-31
 
 ### Added
+
 - Campo `provider: "mercado_pago"` em todas as respostas normalizadas
 - Campo `type` no output normalizado (payment, plan, subscription, webhook)
 - Documentação arquitetural completa:
@@ -23,6 +34,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   - Testes de execução do node
 
 ### Changed
+
 - Formato de `transaction_amount` do PIX: agora usa decimal (não centavos) conforme API do Mercado Pago
 - Melhorias na cobertura de testes:
   - Statements: 89.69%
@@ -32,16 +44,19 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Configuração do Jest atualizada para ignorar testes locais (`test/local/`)
 
 ### Removed
+
 - Recurso `RecurringPayments` (obsoleto e mal implementado)
   - **Migração**: Use `Subscriptions` para pagamentos recorrentes com cartão
   - **Migração**: Use `PIX` para recorrência manual (criando pagamentos individuais)
 
 ### Fixed
+
 - Correção do formato decimal para PIX (API espera decimal, não centavos)
 - Correção de testes que esperavam formato incorreto (centavos)
 - Correção de mensagens de erro para incluir status HTTP
 
 ### Documentation
+
 - Adicionada documentação sobre diferença entre Assinatura e Recorrência
 - Atualizado `README.md` removendo referências a Pagamentos Recorrentes
 - Atualizado `docs/GUIA_CAMPOS.md` removendo seção de Pagamentos Recorrentes
@@ -51,5 +66,5 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [1.0.15] - 2024-XX-XX
 
 ### Changed
-- Versão anterior antes das melhorias arquiteturais
 
+- Versão anterior antes das melhorias arquiteturais
