@@ -62,9 +62,21 @@ export function handleMercadoPagoError(error: any): MercadoPagoError {
 
 		let message = data.message || error.message || 'Erro desconhecido na API do Mercado Pago';
 		
+		// Adiciona status HTTP na mensagem se não estiver presente
+		if (!message.includes(`Status HTTP: ${status}`) && !message.includes(`(${status})`)) {
+			message = `${message} (Status HTTP: ${status})`;
+		}
+		
+		// Adiciona detalhes de causas se disponíveis
 		if (data.cause && Array.isArray(data.cause) && data.cause.length > 0) {
-			const causes = data.cause.map((c: any) => c.description || c.message || c.code).join('; ');
-			message = `${message}. Detalhes: ${causes}`;
+			const causes = data.cause.map((c: any) => {
+				const causeDesc = c.description || c.message || c.code || '';
+				const causeField = c.field ? ` [Campo: ${c.field}]` : '';
+				return `${causeDesc}${causeField}`;
+			}).join('; ');
+			if (!message.includes(causes)) {
+				message = `${message}. Causas: ${causes}`;
+			}
 		}
 
 		return {
@@ -78,15 +90,17 @@ export function handleMercadoPagoError(error: any): MercadoPagoError {
 	if (error.request) {
 		// Erro de rede (sem resposta)
 		return {
-			message: 'Erro de conexão com a API do Mercado Pago. Verifique sua conexão com a internet.',
+			message: 'Erro de conexão com a API do Mercado Pago. Verifique sua conexão com a internet. (Status HTTP: 0)',
 			status: 0,
 		};
 	}
 
 	// Erro genérico
+	const status = error.statusCode || 500;
+	const genericMessage = error.message || 'Erro desconhecido';
 	return {
-		message: error.message || 'Erro desconhecido',
-		status: error.statusCode || 500,
+		message: genericMessage.includes(`(${status})`) ? genericMessage : `${genericMessage} (Status HTTP: ${status})`,
+		status,
 	};
 }
 

@@ -160,6 +160,7 @@ export class SubscriptionsResource implements IResourceHandler {
           trialPeriodDays: trialPeriodDays,
           cardTokenId: cardTokenId ? "provided" : "not provided",
           subscriptionStatus: subscriptionStatus,
+          backUrl: backUrl || "not provided",
         },
         timestamp: Date.now(),
         sessionId: "debug-session",
@@ -239,7 +240,13 @@ export class SubscriptionsResource implements IResourceHandler {
       body: JSON.stringify({
         location: "SubscriptionsResource.ts:186",
         message: "createSubscription: body prepared",
-        data: { body: JSON.stringify(body), hasCardToken: !!body.card_token_id },
+        data: { 
+          body: JSON.stringify(body), 
+          hasCardToken: !!body.card_token_id,
+          status: body.status,
+          hasBackUrl: !!body.back_url,
+          bodyKeys: Object.keys(body),
+        },
         timestamp: Date.now(),
         sessionId: "debug-session",
         runId: "run1",
@@ -289,6 +296,8 @@ export class SubscriptionsResource implements IResourceHandler {
             error: error?.message,
             errorData: error?.response?.data,
             hasCardToken: !!body.card_token_id,
+            errorStatus: error?.response?.status,
+            bodyRequested: JSON.stringify(body),
           },
           timestamp: Date.now(),
           sessionId: "debug-session",
@@ -301,11 +310,12 @@ export class SubscriptionsResource implements IResourceHandler {
       // Tratamento de erros específicos com mensagens melhoradas
       const errorMessage = error?.response?.data?.message || error?.message || "Erro desconhecido";
       const errorStatus = error?.response?.status;
+      const errorContext = `[Criar Assinatura | PlanId: ${planId} | PayerEmail: ${payerEmail} | Status: ${body.status || subscriptionStatus} | HTTP: ${errorStatus || 'N/A'}]`;
 
       // Erro sobre card_token_id
       if (errorMessage.includes("card_token_id") || errorMessage.includes("card token")) {
         throw new Error(
-          `Erro ao criar assinatura: Token do Cartão (card_token_id) é obrigatório para status "authorized". ` +
+          `${errorContext} Erro ao criar assinatura: Token do Cartão (card_token_id) é obrigatório para status "authorized". ` +
           `O token deve ser obtido no front-end usando o CardForm do Mercado Pago (Checkout Transparente). ` +
           `Veja a documentação: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards ` +
           `Alternativa: Crie a assinatura com status "pending" (sem card_token_id) para receber um init_point. ` +
@@ -316,7 +326,7 @@ export class SubscriptionsResource implements IResourceHandler {
       // Erro sobre campos obrigatórios
       if (errorMessage.includes("payer_email") || errorMessage.includes("email")) {
         throw new Error(
-          `Erro ao criar assinatura: E-mail do pagador (payer_email) é obrigatório. ` +
+          `${errorContext} Erro ao criar assinatura: E-mail do pagador (payer_email) é obrigatório. ` +
           `Forneça um e-mail válido. ` +
           `Referência: https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post ` +
           `Erro da API: ${errorMessage}`
@@ -326,8 +336,8 @@ export class SubscriptionsResource implements IResourceHandler {
       // Erro sobre plano
       if (errorMessage.includes("plan") || errorMessage.includes("preapproval_plan_id")) {
         throw new Error(
-          `Erro ao criar assinatura: ID do plano inválido ou não encontrado. ` +
-          `Verifique se o planId está correto e se o plano existe. ` +
+          `${errorContext} Erro ao criar assinatura: ID do plano inválido ou não encontrado. ` +
+          `Verifique se o planId (${planId}) está correto e se o plano existe. ` +
           `Erro da API: ${errorMessage}`
         );
       }
@@ -335,16 +345,20 @@ export class SubscriptionsResource implements IResourceHandler {
       // Erro de autenticação
       if (errorStatus === 401 || errorStatus === 403) {
         throw new Error(
-          `Erro de autenticação: Verifique suas credenciais do Mercado Pago (Access Token). ` +
+          `${errorContext} Erro de autenticação: Verifique suas credenciais do Mercado Pago (Access Token). ` +
           `Certifique-se de estar usando o token correto para o ambiente (sandbox ou produção). ` +
           `Erro da API (${errorStatus}): ${errorMessage}`
         );
       }
 
+      // Adiciona detalhes de causas se disponíveis
+      const causeDetails = error?.response?.data?.cause && Array.isArray(error.response.data.cause) && error.response.data.cause.length > 0
+        ? ` | Causas: ${error.response.data.cause.map((c: any) => c.description || c.message || c.code).join('; ')}`
+        : '';
+
       // Erro genérico com referência à documentação
       throw new Error(
-        `Erro ao criar assinatura: ${errorMessage} ` +
-        `(Status HTTP: ${errorStatus || 'N/A'}). ` +
+        `${errorContext} Erro ao criar assinatura: ${errorMessage}${causeDetails}. ` +
         `Consulte a documentação oficial: https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post`
       );
     }

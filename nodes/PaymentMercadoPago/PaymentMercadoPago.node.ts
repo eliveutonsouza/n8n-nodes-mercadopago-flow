@@ -261,6 +261,12 @@ export class PaymentMercadoPago implements INodeType {
             }
           ).catch(() => {});
           // #endregion
+          
+          // Adiciona contexto à mensagem de erro
+          const errorStatus = planError?.response?.status || planError?.statusCode || 'N/A';
+          const errorResponseData = planError?.response?.data || {};
+          const errorContext = `[Resource: ${resource}, Operation: ${operation}, Item: ${i}, HTTP Status: ${errorStatus}]`;
+          
           // Tratamento específico para erros de parâmetros em planos
           if (resource === "plans") {
             if (
@@ -268,7 +274,7 @@ export class PaymentMercadoPago implements INodeType {
               planError?.message?.toLowerCase().includes("parameter")
             ) {
               throw new Error(
-                `Erro ao obter parâmetros para criar plano. ` +
+                `${errorContext} Erro ao obter parâmetros para criar plano. ` +
                   `Verifique se todos os campos obrigatórios estão preenchidos: ` +
                   `Nome do Plano, Valor, Frequência, Tipo de Frequência, Moeda e URL de Retorno. ` +
                   `Detalhes: ${planError.message}`
@@ -284,7 +290,7 @@ export class PaymentMercadoPago implements INodeType {
               planError?.message?.includes("obrigatório")
             ) {
               throw new Error(
-                `Erro ao obter parâmetros para criar assinatura. ` +
+                `${errorContext} Erro ao obter parâmetros para criar assinatura. ` +
                   `Verifique se todos os campos obrigatórios estão preenchidos: ` +
                   `ID do Plano (planId) e E-mail do Pagador (payerEmail). ` +
                   `Se estiver usando expressões como {{ $json.body.* }}, verifique se os valores estão sendo resolvidos corretamente. ` +
@@ -292,7 +298,17 @@ export class PaymentMercadoPago implements INodeType {
               );
             }
           }
-          throw planError;
+          
+          // Melhora a mensagem de erro genérico com contexto
+          const enhancedErrorMessage = planError?.message || "Erro desconhecido";
+          const apiErrorDetails = errorResponseData.message ? ` | API: ${errorResponseData.message}` : '';
+          const causeDetails = errorResponseData.cause && Array.isArray(errorResponseData.cause) && errorResponseData.cause.length > 0
+            ? ` | Causas: ${errorResponseData.cause.map((c: any) => c.description || c.message || c.code).join('; ')}`
+            : '';
+          
+          throw new Error(
+            `${errorContext} ${enhancedErrorMessage}${apiErrorDetails}${causeDetails}`
+          );
         }
 
         // #region agent log
@@ -354,9 +370,27 @@ export class PaymentMercadoPago implements INodeType {
           }
         ).catch(() => {});
         // #endregion
+        
         const errorData = handleMercadoPagoError(error);
-        const errorMessage =
-          errorData?.message || (error as any)?.message || "Erro desconhecido";
+        let errorMessage = errorData?.message || (error as any)?.message || "Erro desconhecido";
+        
+        // Adiciona contexto se disponível (resource, operation, item index)
+        try {
+          const resourceParam = (error as any)?.resource || 
+            (() => { try { return this.getNodeParameter("resource", i) as string; } catch { return "unknown"; } })();
+          const operationParam = (error as any)?.operation || 
+            (() => { try { return this.getNodeParameter("operation", i) as string; } catch { return "unknown"; } })();
+          
+          if (resourceParam !== "unknown" || operationParam !== "unknown") {
+            const errorContext = `[Resource: ${resourceParam}, Operation: ${operationParam}, Item: ${i}]`;
+            if (!errorMessage.includes(errorContext)) {
+              errorMessage = `${errorContext} ${errorMessage}`;
+            }
+          }
+        } catch {
+          // Ignora erros ao tentar obter contexto adicional
+        }
+        
         if (this.continueOnFail()) {
           returnData.push({
             json: {

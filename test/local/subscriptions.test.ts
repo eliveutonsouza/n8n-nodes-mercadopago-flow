@@ -245,6 +245,84 @@ async function testListSubscriptions() {
 	}
 }
 
+async function testCreateSubscriptionWithSpecificData(params: {
+	planId: string;
+	payerEmail: string;
+	payerDocument?: string;
+	startDate?: string;
+	trialPeriodDays?: number;
+	cardTokenId?: string;
+	subscriptionStatus?: string;
+	backUrl?: string;
+}) {
+	console.log('🧪 Teste: Criar Assinatura com dados específicos\n');
+	console.log('📝 Parâmetros fornecidos:');
+	console.log(`   Plan ID: ${params.planId}`);
+	console.log(`   Payer Email: ${params.payerEmail}`);
+	console.log(`   Payer Document: ${params.payerDocument || 'não fornecido'}`);
+	console.log(`   Start Date: ${params.startDate || 'não fornecido'}`);
+	console.log(`   Trial Period Days: ${params.trialPeriodDays ?? 'não fornecido'}`);
+	console.log(`   Card Token ID: ${params.cardTokenId ? 'fornecido' : 'não fornecido'}`);
+	console.log(`   Subscription Status: ${params.subscriptionStatus || 'pending'}`);
+	console.log(`   Back URL: ${params.backUrl || 'não fornecido'}\n`);
+
+	const credentials = loadCredentialsFromEnv();
+	displayCredentialsInfo(credentials);
+
+	const node = new PaymentMercadoPago();
+	const executeFunctions = new LocalExecuteFunctions(credentials);
+
+	executeFunctions.setParams({
+		resource: 'subscriptions',
+		operation: 'create',
+		planId: params.planId,
+		payerEmail: params.payerEmail,
+		payerDocument: params.payerDocument || '',
+		startDate: params.startDate || '',
+		trialPeriodDays: params.trialPeriodDays ?? 0,
+		cardTokenId: params.cardTokenId || '',
+		subscriptionStatus: params.subscriptionStatus || 'pending',
+		backUrl: params.backUrl || '',
+	});
+
+	executeFunctions.setInputData([
+		{
+			json: {
+				resource: 'subscriptions',
+				operation: 'create',
+			},
+		},
+	]);
+
+	try {
+		console.log('\n📤 Enviando requisição para criar assinatura...\n');
+		const result = await (node.execute as any).call(executeFunctions);
+		console.log('✅ Assinatura criada com sucesso!');
+		console.log('\n📋 Resultado:');
+		console.log(JSON.stringify(result[0][0].json, null, 2));
+		
+		if (result[0][0].json.initPoint || result[0][0].json.init_point) {
+			console.log('\n🔗 URL de Checkout (init_point):');
+			console.log(result[0][0].json.initPoint || result[0][0].json.init_point);
+		}
+		
+		return result[0][0].json.id;
+	} catch (error: any) {
+		console.error('\n❌ Erro ao criar assinatura:');
+		if (error.response?.data) {
+			console.error('\n📄 Detalhes do erro da API:');
+			console.error(JSON.stringify(error.response.data, null, 2));
+		}
+		console.error('\n💬 Mensagem de erro:');
+		console.error(error.message);
+		if (error.stack) {
+			console.error('\n📚 Stack trace:');
+			console.error(error.stack);
+		}
+		throw error;
+	}
+}
+
 async function runTests(planId?: string) {
 	try {
 		console.log('🚀 Iniciando testes locais de Assinaturas\n');
@@ -300,5 +378,5 @@ if (require.main === module) {
 	runTests(planId);
 }
 
-export { testCreateSubscription, testGetSubscription, testPauseSubscription, testResumeSubscription, testCancelSubscription, testListSubscriptions };
+export { testCreateSubscription, testGetSubscription, testPauseSubscription, testResumeSubscription, testCancelSubscription, testListSubscriptions, testCreateSubscriptionWithSpecificData };
 

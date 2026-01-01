@@ -169,14 +169,14 @@ describe('Helpers', () => {
 		it('deve normalizar erro genérico', () => {
 			const genericError = { message: 'Erro genérico', statusCode: 500 };
 			const error = handleMercadoPagoError(genericError);
-			expect(error.message).toBe('Erro genérico');
+			expect(error.message).toBe('Erro genérico (Status HTTP: 500)');
 			expect(error.status).toBe(500);
 		});
 
 		it('deve lidar com erro sem mensagem', () => {
 			const errorWithoutMessage = {};
 			const error = handleMercadoPagoError(errorWithoutMessage);
-			expect(error.message).toBe('Erro desconhecido');
+			expect(error.message).toBe('Erro desconhecido (Status HTTP: 500)');
 			expect(error.status).toBe(500);
 		});
 	});
