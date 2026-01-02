@@ -5,22 +5,6 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [1.3.2] - 2025-01-02
-
-### Changed
-
-- Ícone `mercadopago.svg` movido para o diretório correto do novo node
-- Adicionado arquivo `nul` ao `.gitignore` para evitar problemas no Windows
-
-## [1.3.1] - 2025-01-02
-
-### Fixed
-
-- Removidos arquivos do node antigo (`PaymentMercadoPago` e `PixPayment`) do diretório `dist/`
-- Corrigido conflito de instalação "There is already an entry with this name"
-- Build agora contém apenas o novo node `MercadoPago`
-- Adicionada documentação para resolver conflitos de instalação (`docs/RESOLVER_CONFLITO_INSTALACAO.md`)
-
 ## [1.3.0] - 2025-01-01
 
 ### Added

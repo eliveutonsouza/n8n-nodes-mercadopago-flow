@@ -1,6 +1,27 @@
 # Compatibilidade de Ambiente - Mercado Pago
 
-## ⚠️ Regra Fundamental
+## ⚠️ Requisitos Críticos
+
+### 1. PIX Só Funciona em Produção
+
+**IMPORTANTE**: Pagamentos PIX **SOMENTE** funcionam com credenciais de **produção**.
+
+- ✅ **Credenciais de Produção** → PIX funciona
+- ❌ **Credenciais de Sandbox** → PIX **NÃO funciona**
+
+O Mercado Pago não oferece suporte a PIX no ambiente de testes (sandbox). Para testar PIX, você precisa usar credenciais de produção.
+
+**Recomendações:**
+
+- Use valores pequenos para testes em produção
+- Monitore cuidadosamente os pagamentos de teste
+- Considere criar uma conta de teste separada para desenvolvimento
+
+Para mais detalhes, consulte [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md).
+
+---
+
+### 2. Regra Fundamental: Compatibilidade de Ambiente
 
 **PUBLIC_KEY e Access Token DEVEM estar no mesmo ambiente (sandbox ou produção).**
 
@@ -36,7 +57,7 @@ O Access Token é configurado através da variável de ambiente `MP_ENVIRONMENT`
 
 Se você receber o erro:
 
-```
+```text
 CC_VAL_433 Credit card validation has failed
 ```
 
@@ -60,6 +81,7 @@ npm run frontend:config
 ```
 
 O script mostrará:
+
 - Se conseguiu detectar o ambiente da PUBLIC_KEY automaticamente
 - Se há incompatibilidade com o Access Token
 
@@ -75,6 +97,7 @@ MP_ACCESS_TOKEN=APP_USR-...
 ### 3. Garantir Compatibilidade
 
 **Cenário 1: Desenvolvimento/Testes**
+
 ```bash
 # .env
 MP_ENVIRONMENT=sandbox
@@ -83,6 +106,7 @@ MERCADOPAGO_PUBLIC_KEY=APP_USR-...  # PUBLIC_KEY de sandbox
 ```
 
 **Cenário 2: Produção**
+
 ```bash
 # .env
 MP_ENVIRONMENT=production
@@ -115,21 +139,25 @@ MERCADOPAGO_PUBLIC_KEY=APP_USR-2222222222-222222-bbbbbb...
 ### Erro: "CC_VAL_433 Credit card validation has failed"
 
 **Passo 1**: Verifique o ambiente do Access Token
+
 ```bash
 # No .env
 MP_ENVIRONMENT=sandbox  # ou production?
 ```
 
 **Passo 2**: Verifique o ambiente da PUBLIC_KEY
+
 - Acesse: https://www.mercadopago.com.br/developers/panel/credentials
 - Veja se a PUBLIC_KEY está em "Credenciais de teste" ou "Credenciais de produção"
 
 **Passo 3**: Execute a validação
+
 ```bash
 npm run frontend:config
 ```
 
 **Passo 4**: Se houver incompatibilidade:
+
 - Use PUBLIC_KEY e Access Token do mesmo ambiente
 - Gere um novo token no frontend após corrigir
 - Tente criar a assinatura novamente
@@ -149,7 +177,7 @@ $ npm run frontend:config
 📋 Configurações:
    Public Key: APP_USR-9bfc91e0-7266...
    Ambiente detectado da Public Key: sandbox
-   
+
    ✅ Ambientes compatíveis: PUBLIC_KEY e Access Token estão ambos em "sandbox".
 ```
 
@@ -162,12 +190,12 @@ $ npm run frontend:config
 📋 Configurações:
    Public Key: APP_USR-9bfc91e0-7266...
    Ambiente detectado da Public Key: sandbox
-   
-   ⚠️ INCOMPATIBILIDADE DE AMBIENTE DETECTADA: 
+
+   ⚠️ INCOMPATIBILIDADE DE AMBIENTE DETECTADA:
    PUBLIC_KEY está em ambiente "sandbox" mas Access Token está em "production".
    Tokens gerados com PUBLIC_KEY de um ambiente não funcionam com Access Token de outro ambiente.
    Certifique-se de usar PUBLIC_KEY e Access Token do mesmo ambiente.
-   
+
    💡 SOLUÇÃO:
    - Use PUBLIC_KEY e Access Token do mesmo ambiente (sandbox ou produção)
    - Verifique suas credenciais no painel do Mercado Pago:
@@ -176,7 +204,7 @@ $ npm run frontend:config
 
 ## Referências
 
+- [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md) - Informações críticas sobre requisitos
+- [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) - Guia completo de implementação
 - [Painel de Credenciais do Mercado Pago](https://www.mercadopago.com.br/developers/panel/credentials)
 - [Documentação de Assinaturas](https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post)
-- [Fluxo de Assinatura com Frontend](docs/FLUXO_ASSINATURA_FRONTEND.md)
-

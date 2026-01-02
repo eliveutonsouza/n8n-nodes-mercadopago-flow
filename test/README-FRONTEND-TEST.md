@@ -150,7 +150,7 @@ Crie um workflow no n8n com:
     },
     {
       "name": "Mercado Pago - Criar Assinatura",
-      "type": "n8n-nodes-mercadopago-pix-assinatura.PaymentMercadoPago",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
       "parameters": {
         "resource": "subscriptions",
         "operation": "create",

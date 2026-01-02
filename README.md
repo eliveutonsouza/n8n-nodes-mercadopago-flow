@@ -1,14 +1,36 @@
-# n8n-nodes-mercadopago-pix-assinatura
+# n8n-nodes-mercadopago-flow
 
-[![npm version](https://img.shields.io/npm/v/n8n-nodes-mercadopago-pix-assinatura.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-pix-assinatura)
-[![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-mercadopago-pix-assinatura.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-pix-assinatura)
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-mercadopago-flow.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-flow)
+[![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-mercadopago-flow.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-flow)
 
-Node customizado do n8n para processamento de pagamentos via Mercado Pago, com suporte completo a:
+Node customizado do n8n para integração completa com a API do Mercado Pago, oferecendo suporte a **15 recursos** diferentes para processamento de pagamentos, gestão de clientes, assinaturas recorrentes e muito mais.
 
-- 💰 **Pagamentos PIX** (criação, consulta, reembolso)
-- 📋 **Planos** (criar, consultar, listar, atualizar)
-- 🔄 **Assinaturas** (criar, pausar, retomar, cancelar, consultar, listar)
-- 🔔 **Webhooks** (registro, listagem, exclusão, consulta)
+## 🎯 Recursos Disponíveis
+
+Este node oferece integração completa com a API do Mercado Pago através dos seguintes recursos:
+
+### Recursos Principais (Foco do Projeto)
+
+- 💰 **PIX** - Pagamentos instantâneos via PIX (criar, consultar, reembolsar)
+- 📋 **Planos** - Gestão de planos de assinatura (criar, consultar, listar, atualizar)
+- 🔄 **Assinaturas** - Assinaturas recorrentes (criar, pausar, retomar, cancelar, consultar, listar)
+- 🔔 **Webhooks** - Notificações de eventos (registrar, consultar, listar, excluir)
+
+### Recursos Adicionais
+
+- 💳 **Payments** - Pagamentos genéricos (criar, consultar, listar, buscar, reembolsar, capturar, cancelar)
+- 👥 **Customers** - Gestão de clientes (criar, consultar, atualizar, deletar, listar, buscar)
+- 🎴 **Cards** - Gestão de cartões de crédito (criar, consultar, deletar, listar)
+- ⚙️ **Preferences** - Preferências de checkout (criar, consultar, atualizar)
+- 📱 **QR Orders** - Pedidos via QR Code (criar, consultar, listar)
+- 🏪 **POS** - Pontos de venda (criar, consultar, atualizar, deletar, listar)
+- 🏬 **Stores** - Gestão de lojas (criar, consultar, atualizar, deletar, listar)
+- ⚠️ **Chargebacks** - Gestão de chargebacks (consultar, listar, enviar documentação)
+- 🔐 **OAuth** - Autenticação OAuth (autorizar, renovar token, obter info do usuário)
+- 💳 **Payment Methods** - Métodos de pagamento disponíveis (listar)
+- 🆔 **Identification Types** - Tipos de identificação (listar)
+
+> **Nota**: Este projeto tem foco especial em **PIX** e **Assinaturas**, com documentação detalhada para esses recursos. Para informações sobre os outros recursos, consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs).
 
 ## 📋 Requisitos
 
@@ -23,8 +45,8 @@ Node customizado do n8n para processamento de pagamentos via Mercado Pago, com s
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/eliveutonsouza/n8n-nodes-mercadopago-pix-assinatura.git
-cd n8n-nodes-mercadopago-pix-assinatura
+git clone https://github.com/eliveutonsouza/n8n-nodes-mercadopago-flow.git
+cd n8n-nodes-mercadopago-flow
 ```
 
 2. Instale as dependências:
@@ -52,7 +74,7 @@ npm run dev
 1. No diretório do seu n8n self-hosted, instale o pacote:
 
 ```bash
-npm install n8n-nodes-mercadopago-pix-assinatura
+npm install n8n-nodes-mercadopago-flow
 ```
 
 2. Reinicie o n8n:
@@ -73,6 +95,32 @@ docker restart n8n
 2. Reinicie o n8n
 3. O node aparecerá na lista de nodes disponíveis
 
+## ⚠️ Requisitos Importantes
+
+Antes de começar, certifique-se de conhecer os requisitos críticos:
+
+### 1. Assinaturas Exigem Conta Checkout Pro
+
+**IMPORTANTE**: Para criar assinaturas no n8n, você **DEVE** ter uma conta **Checkout Pro** no Mercado Pago.
+
+- ✅ **Checkout Pro** → Assinaturas funcionam
+- ❌ **Outros tipos de conta** → Assinaturas **NÃO funcionam**
+
+O Checkout Pro é o único tipo de conta que suporta a criação de assinaturas recorrentes via API.
+
+### 2. PIX Só Funciona com Credenciais de Produção
+
+**IMPORTANTE**: Pagamentos PIX **SOMENTE** funcionam com credenciais de **produção**.
+
+- ✅ **Credenciais de Produção** → PIX funciona
+- ❌ **Credenciais de Sandbox** → PIX **NÃO funciona**
+
+O Mercado Pago não oferece suporte a PIX no ambiente de testes (sandbox).
+
+Para mais detalhes, consulte [Requisitos do Mercado Pago](./docs/REQUISITOS_MERCADO_PAGO.md).
+
+---
+
 ## ⚙️ Configuração de Credenciais
 
 1. Acesse o [Painel de Desenvolvedores do Mercado Pago](https://www.mercadopago.com.br/developers/panel/credentials)
@@ -85,6 +133,8 @@ docker restart n8n
    - **Client Secret**: (Opcional)
    - **Environment**: Sandbox ou Production
 
+**Nota**: Para PIX, use sempre Production. Para assinaturas, certifique-se de ter conta Checkout Pro.
+
 ## ⚠️ Limitação Importante: Assinaturas Exigem Frontend
 
 **IMPORTANTE**: Para criar assinaturas (preapproval) no Mercado Pago, o token do cartão (`card_token_id`) **DEVE ser gerado no frontend** usando o CardForm oficial do Mercado Pago.
@@ -92,6 +142,7 @@ docker restart n8n
 ### Por que isso é necessário?
 
 O Mercado Pago exige **prova de consentimento do pagador** para assinaturas recorrentes. Essa prova só existe quando:
+
 - O cartão é digitado pelo usuário no navegador
 - Usando o CardForm oficial do Mercado Pago
 - Com fingerprint do dispositivo embutido
@@ -114,11 +165,14 @@ Todos esses tokens são **sempre recusados** pela API para assinaturas.
 ### Documentação Completa
 
 Para entender o fluxo completo e ver exemplos de código, consulte:
+
 - **[Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md)** - Guia completo com exemplos
 
 ## 📖 Uso
 
 > 📋 **Guia Completo de Campos**: Para exemplos detalhados de preenchimento de todos os campos de todas as operações, consulte o [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md).
+
+> 💡 **Outros Recursos**: Este README foca nos recursos principais (PIX e Assinaturas). Para usar os outros recursos (Payments, Customers, Cards, etc.), selecione o recurso desejado no node e configure os campos conforme necessário. Consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs) para detalhes sobre cada recurso.
 
 ### PIX - Criar Pagamento
 
@@ -243,6 +297,26 @@ Registra um novo webhook para receber notificações de eventos.
 
 Gerencia webhooks registrados.
 
+---
+
+## 🔧 Outros Recursos Disponíveis
+
+Além dos recursos principais documentados acima, o node também suporta:
+
+- **Payments**: Para criar pagamentos genéricos (cartão de crédito, débito, etc.)
+- **Customers**: Para gerenciar clientes e seus dados
+- **Cards**: Para gerenciar cartões de crédito dos clientes
+- **Preferences**: Para criar preferências de checkout personalizadas
+- **QR Orders**: Para criar pedidos via QR Code
+- **POS**: Para gerenciar pontos de venda físicos
+- **Stores**: Para gerenciar lojas e estabelecimentos
+- **Chargebacks**: Para consultar e gerenciar chargebacks
+- **OAuth**: Para autenticação OAuth e renovação de tokens
+- **Payment Methods**: Para listar métodos de pagamento disponíveis
+- **Identification Types**: Para listar tipos de identificação aceitos
+
+Para usar esses recursos, selecione o recurso desejado no node n8n e configure os campos conforme necessário. Consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs) para detalhes sobre cada recurso e seus campos.
+
 ## 🔒 Segurança
 
 - ✅ Tokens nunca são logados
@@ -314,17 +388,15 @@ O campo `raw` contém a resposta completa da API do Mercado Pago para acesso a t
 
 ## 📚 Documentação Adicional
 
-### Documentação Técnica do Node
+### Documentação Essencial
 
-- [Diagramas de Arquitetura](./docs/DIAGRAMAS_ARQUITETURA.md) - Visão completa dos fluxos de Assinatura (cartão) e PIX (recorrência manual) com diagramas Mermaid
-- [Payloads Exatos da API](./docs/PAYLOADS_API.md) - Especificação técnica completa de todos os payloads por operação
-- [Schema do Node n8n](./docs/SCHEMA_NODE.md) - Modelagem completa do schema, campos por operação e output normalizado
-
-### Documentação de Uso
-
-- [Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md) - **LEIA PRIMEIRO**: Guia completo sobre por que frontend é obrigatório e como implementar
+- [Requisitos do Mercado Pago](./docs/REQUISITOS_MERCADO_PAGO.md) - **LEIA PRIMEIRO**: Informações críticas sobre requisitos (Checkout Pro, PIX em produção)
+- [Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md) - Guia completo sobre por que frontend é obrigatório e como implementar
 - [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md) - Exemplos detalhados de preenchimento de todos os campos
+- [Como Obter card_token_id](./docs/COMO_OBTER_CARD_TOKEN.md) - Guia passo a passo para obter token do cartão
 - [Webhooks de Assinaturas](./docs/WEBHOOKS_ASSINATURAS.md) - Configuração e processamento de webhooks
+- [Compatibilidade de Ambiente](./docs/COMPATIBILIDADE_AMBIENTE.md) - Compatibilidade entre ambientes (sandbox/produção)
+- [Diagramas de Arquitetura](./docs/DIAGRAMAS_ARQUITETURA.md) - Diagramas visuais dos fluxos principais
 
 ### Documentação Oficial do Mercado Pago
 
@@ -332,6 +404,7 @@ O campo `raw` contém a resposta completa da API do Mercado Pago para acesso a t
 - [API de Pagamentos](https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post)
 - [API de Assinaturas](https://www.mercadopago.com.br/developers/pt/docs/your-integrations/subscriptions)
 - [API de Webhooks](https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks)
+- [Painel de Credenciais](https://www.mercadopago.com.br/developers/panel/credentials)
 
 ## 🤝 Contribuindo
 
@@ -352,7 +425,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para d
 Eliveuton Souza - eliveuton3m@hotmail.com
 
 **GitHub**: [@eliveutonsouza](https://github.com/eliveutonsouza)  
-**NPM**: [n8n-nodes-mercadopago-pix-assinatura](https://www.npmjs.com/package/n8n-nodes-mercadopago-pix-assinatura)
+**NPM**: [n8n-nodes-mercadopago-flow](https://www.npmjs.com/package/n8n-nodes-mercadopago-flow)
 
 ## 🙏 Agradecimentos
 

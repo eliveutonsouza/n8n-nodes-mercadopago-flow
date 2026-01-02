@@ -544,7 +544,7 @@ Mas é recomendado usar `cardForm.getCardFormData().token` no callback `onSubmit
 
 - [Documentação Oficial - Checkout Transparente](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards)
 - [Documentação Oficial - CardForm](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-features/card-form)
-- [Integração Front-end + n8n](./INTEGRACAO_FRONTEND_N8N.md)
+- [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md)
 - [Guia de Campos](./GUIA_CAMPOS.md)
 
 ## 📞 Suporte

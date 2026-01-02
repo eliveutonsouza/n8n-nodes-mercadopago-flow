@@ -312,7 +312,7 @@ def validar_webhook(headers, body, secret):
     },
     {
       "name": "Consultar Assinatura",
-      "type": "n8n-nodes-custom.mercadopago-pix-assinatura",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
       "parameters": {
         "resource": "subscriptions",
         "operation": "get",
@@ -446,7 +446,7 @@ if (statusAnterior !== statusAtual) {
 ## 🔗 Referências
 
 - [Documentação Oficial - Webhooks](https://www.mercadopago.com.br/developers/pt/reference/webhooks/)
-- [Integração Front-end + n8n](./INTEGRACAO_FRONTEND_N8N.md)
+- [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md)
 - [Guia de Campos](./GUIA_CAMPOS.md)
 
 ## 📞 Suporte

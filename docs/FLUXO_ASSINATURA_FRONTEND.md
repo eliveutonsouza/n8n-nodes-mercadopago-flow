@@ -1,5 +1,16 @@
 # Fluxo de Assinatura com Frontend - Guia Completo
 
+## ⚠️ Requisito Crítico: Conta Checkout Pro
+
+**IMPORTANTE**: Para criar assinaturas no n8n, você **DEVE** ter uma conta **Checkout Pro** no Mercado Pago.
+
+- ✅ **Checkout Pro** → Assinaturas funcionam
+- ❌ **Outros tipos de conta** → Assinaturas **NÃO funcionam**
+
+O Checkout Pro é o único tipo de conta que suporta a criação de assinaturas recorrentes via API. Para mais detalhes, consulte [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md).
+
+---
+
 ## Por que Frontend é Obrigatório?
 
 O Mercado Pago exige **prova de consentimento do pagador** para assinaturas recorrentes (preapproval). Essa prova só existe quando:
@@ -231,7 +242,7 @@ Crie um workflow no n8n com:
     },
     {
       "name": "Mercado Pago - Criar Assinatura",
-      "type": "n8n-nodes-mercadopago-pix-assinatura.PaymentMercadoPago",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
       "parameters": {
         "resource": "subscriptions",
         "operation": "create",
@@ -322,6 +333,121 @@ O n8n retorna sucesso e o frontend mostra confirmação ao usuário.
 
 ---
 
+## Como Enviar Dados para n8n
+
+### Opção 1: Via Webhook do n8n (Recomendado)
+
+O n8n permite criar workflows que são acionados via webhook HTTP.
+
+1. **Crie um workflow no n8n** com um nó "Webhook"
+2. **Configure o webhook** para receber POST requests
+3. **Adicione o node Mercado Pago** após o webhook
+4. **Configure o node** para usar os dados recebidos do webhook
+5. **Obtenha a URL do webhook** do n8n
+6. **Envie dados do front-end** para essa URL
+
+**Exemplo de código JavaScript no front-end:**
+
+```javascript
+async function enviarParaN8n(dados) {
+  const webhookUrl = 'https://seu-n8n.com/webhook/assinatura';
+  
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
+  });
+  
+  const resultado = await response.json();
+  return resultado;
+}
+
+// Exemplo de uso para Assinatura
+const dadosAssinatura = {
+  resource: 'subscriptions',
+  operation: 'create',
+  planId: '2c938084726fca480172750000000000',
+  payerEmail: 'cliente@exemplo.com',
+  payerDocument: '12345678909',
+  cardTokenId: 'abc123def456...', // Obtido do CardForm
+  subscriptionStatus: 'authorized',
+};
+
+const resultado = await enviarParaN8n(dadosAssinatura);
+console.log('Assinatura criada:', resultado);
+```
+
+### Opção 2: Via HTTP Request (API do n8n)
+
+Se você tiver acesso à API do n8n, pode executar workflows diretamente.
+
+**Exemplo:**
+
+```javascript
+async function executarWorkflowN8n(dados) {
+  const apiUrl = 'https://seu-n8n.com/api/v1/workflows/WORKFLOW_ID/execute';
+  const apiKey = 'SUA_API_KEY';
+  
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-N8N-API-KEY': apiKey,
+    },
+    body: JSON.stringify({
+      data: [dados],
+    }),
+  });
+  
+  return await response.json();
+}
+```
+
+---
+
+## Tratamento de Respostas
+
+### Resposta de Assinatura (com card_token_id)
+
+```json
+{
+  "id": "2c938084726fca480172750000000000",
+  "status": "authorized",
+  "payerEmail": "cliente@exemplo.com",
+  "planId": "2c938084726fca480172750000000000",
+  "nextPaymentDate": "2024-02-01T00:00:00.000Z",
+  "createdAt": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**O que fazer:**
+1. Confirme que `status` é "authorized"
+2. Exiba mensagem de sucesso
+3. Ative acesso do cliente ao serviço
+4. Configure webhook para monitorar mudanças
+
+### Resposta de Assinatura (sem card_token_id)
+
+```json
+{
+  "id": "2c938084726fca480172750000000000",
+  "status": "pending",
+  "initPoint": "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id=2c938084726fca480172750000000000",
+  "payerEmail": "cliente@exemplo.com",
+  "planId": "2c938084726fca480172750000000000",
+  "createdAt": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**O que fazer:**
+1. Use `initPoint` para redirecionar o cliente
+2. Ou exiba um botão/link para o cliente acessar
+3. Configure webhook para ser notificado quando status mudar para "authorized"
+
+---
+
 ## Exemplo de Código Frontend (React)
 
 ```jsx
@@ -395,7 +521,7 @@ function CheckoutForm({ planId, publicKey }) {
 
 Tokens gerados com PUBLIC_KEY de um ambiente não funcionam com Access Token de outro ambiente. Isso causará erro `CC_VAL_433`.
 
-Para mais detalhes, consulte: [docs/COMPATIBILIDADE_AMBIENTE.md](COMPATIBILIDADE_AMBIENTE.md)
+Para mais detalhes, consulte: [Compatibilidade de Ambiente](./COMPATIBILIDADE_AMBIENTE.md)
 
 ### Ambiente Sandbox
 
@@ -442,7 +568,7 @@ Para mais detalhes, consulte: [docs/COMPATIBILIDADE_AMBIENTE.md](COMPATIBILIDADE
 **Solução**: 
 - Verifique se a PUBLIC_KEY usada no frontend está no mesmo ambiente do Access Token
 - Execute `npm run frontend:config` para validar compatibilidade
-- Consulte [docs/COMPATIBILIDADE_AMBIENTE.md](COMPATIBILIDADE_AMBIENTE.md) para mais detalhes
+- Consulte [Compatibilidade de Ambiente](./COMPATIBILIDADE_AMBIENTE.md) para mais detalhes
 
 ---
 
@@ -454,8 +580,37 @@ O node n8n está funcionando corretamente. O que falta é a **ponte frontend** q
 
 ---
 
+## Dúvidas Frequentes
+
+### Posso coletar dados do cartão diretamente no n8n?
+
+**Não recomendado**. Por questões de segurança PCI, os dados do cartão devem ser coletados no front-end usando o CardForm do MercadoPago.js. O n8n recebe apenas o `card_token_id` já tokenizado.
+
+### O que acontece se eu não enviar card_token_id?
+
+A assinatura será criada com `status: "pending"` e você receberá um `init_point` (URL) para o cliente completar o pagamento no checkout do Mercado Pago.
+
+### Como monitorar mudanças de status?
+
+Configure webhooks no Mercado Pago para receber notificações quando o status da assinatura mudar. Veja [Webhooks para Assinaturas](./WEBHOOKS_ASSINATURAS.md).
+
+### O card_token_id expira?
+
+Sim, o token expira em 7 dias e pode ser usado apenas uma vez. Se precisar criar outra assinatura, gere um novo token.
+
+### Preciso ter Checkout Pro para criar assinaturas?
+
+**Sim, obrigatório**. Apenas contas Checkout Pro podem criar assinaturas. Veja [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md) para mais detalhes.
+
+---
+
 ## Referências
 
+- [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md) - Informações críticas sobre requisitos
+- [Como Obter card_token_id](./COMO_OBTER_CARD_TOKEN.md) - Guia passo a passo
+- [Webhooks para Assinaturas](./WEBHOOKS_ASSINATURAS.md) - Configuração de webhooks
+- [Compatibilidade de Ambiente](./COMPATIBILIDADE_AMBIENTE.md) - Compatibilidade entre ambientes
+- [Guia de Campos](./GUIA_CAMPOS.md) - Referência completa de campos
 - [Documentação Oficial - Checkout Transparente](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards)
 - [CardForm - Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-configuration/integrate-cardform)
 - [API de Assinaturas](https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post)

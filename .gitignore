@@ -34,7 +34,6 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
-nul
 
 # Frontend config (gerado do .env)
 test/frontend-config.js

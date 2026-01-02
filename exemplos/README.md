@@ -1,6 +1,8 @@
 # 📦 Exemplos de Workflows n8n
 
-Esta pasta contém exemplos de workflows prontos para importar no n8n, demonstrando o uso do node **Mercado Pago PIX e Assinaturas**.
+Esta pasta contém exemplos de workflows prontos para importar no n8n, demonstrando o uso do node **Mercado Pago** com foco em **PIX e Assinaturas**.
+
+> **Nota**: O node suporta 15 recursos diferentes. Estes exemplos focam nos recursos principais (PIX, Assinaturas, Planos e Webhooks). Para outros recursos, consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs).
 
 ## 📋 Workflows Disponíveis
 
@@ -112,7 +114,7 @@ Workflow para registrar um novo webhook para receber notificações.
 
 1. Clique no node **Mercado Pago**
 2. Em **Credential**, clique em **Create New Credential**
-3. Selecione **Pix Payment API**
+3. Selecione **Mercado Pago API**
 4. Preencha:
    - **Access Token**: Seu token de acesso do Mercado Pago
    - **Environment**: Sandbox ou Production
@@ -183,7 +185,7 @@ Todos os workflows usam valores de exemplo genéricos:
 ## 🐛 Solução de Problemas
 
 ### Erro: "Credential not found"
-- Certifique-se de criar e configurar a credencial **Pix Payment API** antes de executar
+- Certifique-se de criar e configurar a credencial **Mercado Pago API** antes de executar
 
 ### Erro: "Invalid credentials"
 - Verifique se o Access Token está correto

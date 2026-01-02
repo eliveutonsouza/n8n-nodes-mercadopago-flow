@@ -1,12 +1,27 @@
 # 📋 Guia de Referência de Campos
 
-Este documento contém exemplos completos de preenchimento de todos os campos disponíveis em cada operação do node Mercado Pago PIX e Assinaturas.
+Este documento contém exemplos completos de preenchimento de todos os campos disponíveis nas operações principais do node Mercado Pago: **PIX**, **Assinaturas**, **Planos** e **Webhooks**.
+
+> **Nota**: Este guia foca nos recursos principais. O node também suporta outros recursos (Payments, Customers, Cards, Preferences, QR Orders, POS, Stores, Chargebacks, OAuth, Payment Methods, Identification Types). Para informações sobre esses recursos, consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs).
+
+## ⚠️ Requisitos Importantes
+
+Antes de usar este guia, certifique-se de conhecer os requisitos críticos:
+
+- **Assinaturas**: Exigem conta **Checkout Pro** (único que funciona)
+- **PIX**: Só funciona com credenciais de **produção** (não funciona em sandbox)
+
+Para mais detalhes, consulte [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md).
+
+---
 
 ## 📦 PIX
 
 ### Criar Pagamento
 
 Cria um novo pagamento PIX e retorna o QR Code para pagamento.
+
+**⚠️ IMPORTANTE**: PIX só funciona com credenciais de **produção**. Não é possível testar PIX em sandbox.
 
 #### Campos Disponíveis
 
@@ -114,6 +129,8 @@ Reembolsa total ou parcialmente um pagamento PIX.
 
 Cria uma nova assinatura baseada em um plano existente. Segundo a documentação oficial do Mercado Pago, é possível criar assinaturas com ou sem plano associado.
 
+**⚠️ IMPORTANTE**: Para criar assinaturas, você **DEVE** ter uma conta **Checkout Pro** no Mercado Pago. Outros tipos de conta não funcionam para assinaturas.
+
 #### Campos Disponíveis
 
 | Campo | Tipo | Obrigatório | Descrição | Exemplo |
@@ -125,6 +142,9 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
 | Status da Assinatura | options | ❌ Não | Status inicial: "pending" (sem cartão, retorna init_point) ou "authorized" (com cartão, requer card_token_id obrigatório). Padrão: "pending" | `"pending"` ou `"authorized"` |
 | Data de Início | dateTime | ❌ Não | Data de início da assinatura (ISO 8601). Funciona apenas em conjunto com end_date. | `"2024-01-01T00:00:00.000Z"` |
 | Período de Trial (dias) | number | ❌ Não | Número de dias de período de trial grátis | `7` |
+| URL de Retorno | string | ❌ Não | URL de retorno após o checkout | `"https://www.mercadopago.com.br"` |
+| Descrição da Assinatura | string | ❌ Não | Descrição da assinatura | `"Assinatura Premium Mensal"` |
+| Referência Externa | string | ❌ Não | Referência externa para identificar a assinatura | `"ASSINATURA_12345"` |
 
 #### Exemplo JSON Completo (Com Cartão - Status Authorized)
 
@@ -138,7 +158,10 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
   "cardTokenId": "abc123def456",
   "subscriptionStatus": "authorized",
   "startDate": "2024-01-01T00:00:00.000Z",
-  "trialPeriodDays": 7
+  "trialPeriodDays": 7,
+  "backUrl": "https://www.mercadopago.com.br",
+  "reason": "Assinatura Premium Mensal",
+  "externalReference": "ASSINATURA_12345"
 }
 ```
 
@@ -153,7 +176,10 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
   "payerDocument": "12345678909",
   "subscriptionStatus": "pending",
   "startDate": "2024-01-01T00:00:00.000Z",
-  "trialPeriodDays": 7
+  "trialPeriodDays": 7,
+  "backUrl": "https://www.mercadopago.com.br",
+  "reason": "Assinatura Premium Mensal",
+  "externalReference": "ASSINATURA_12345"
 }
 ```
 
@@ -207,7 +233,7 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
    - Documentação oficial: [Checkout Transparente - CardForm](https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards)
 
 5. **Integração Front-end + n8n:**
-   - Veja [INTEGRACAO_FRONTEND_N8N.md](./INTEGRACAO_FRONTEND_N8N.md) para guia completo
+   - Veja [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) para guia completo
    - O front-end coleta dados do cartão → gera token → envia para n8n
    - O n8n recebe o token e cria a assinatura na API do Mercado Pago
 
@@ -334,6 +360,8 @@ Cria um novo plano de assinatura no Mercado Pago.
 | Valor | number | ✅ Sim | Valor do plano em reais | `99.99` |
 | Frequência | number | ✅ Sim | Frequência de cobrança (ex: 1 para mensal) | `1` |
 | Tipo de Frequência | options | ✅ Sim | Tipo de frequência (dias ou meses) | `"months"` |
+| Moeda | options | ✅ Sim | Moeda do plano (BRL, ARS, CLP, MXN, COP, PEN, UYU) | `"BRL"` |
+| URL de Retorno | string | ✅ Sim | URL de retorno após o checkout | `"https://www.mercadopago.com.br"` |
 
 **Opções de Tipo de Frequência:**
 - `days` - Dias
@@ -348,7 +376,9 @@ Cria um novo plano de assinatura no Mercado Pago.
   "reason": "Plano Mensal Premium",
   "amount": 99.99,
   "frequency": 1,
-  "frequencyType": "months"
+  "frequencyType": "months",
+  "currencyId": "BRL",
+  "backUrl": "https://www.mercadopago.com.br"
 }
 ```
 
@@ -464,6 +494,7 @@ Registra um novo webhook para receber notificações de eventos.
 **Eventos Disponíveis:**
 - `payment` - Notificações de pagamentos (payment.created, payment.updated)
 - `subscription` - Notificações de assinaturas (subscription.created, subscription.updated)
+- `plan` - Notificações de planos (plan.created, plan.updated)
 
 #### Exemplo JSON Completo
 
@@ -607,6 +638,10 @@ Todas as datas devem estar no formato ISO 8601:
 
 ## 🔗 Referências
 
+- [Requisitos do Mercado Pago](./REQUISITOS_MERCADO_PAGO.md) - Informações críticas sobre requisitos
+- [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) - Guia completo de implementação
+- [Como Obter card_token_id](./COMO_OBTER_CARD_TOKEN.md) - Guia passo a passo
+- [Compatibilidade de Ambiente](./COMPATIBILIDADE_AMBIENTE.md) - Compatibilidade entre ambientes
 - [README Principal](../README.md)
 - [Documentação do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs)
 - [API de Pagamentos](https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post)

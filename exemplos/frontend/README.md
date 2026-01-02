@@ -128,7 +128,7 @@ Os exemplos incluem estilos CSS que você pode personalizar:
 
 ## 📚 Documentação Relacionada
 
-- [Integração Front-end + n8n](../../docs/INTEGRACAO_FRONTEND_N8N.md)
+- [Fluxo de Assinatura com Frontend](../../docs/FLUXO_ASSINATURA_FRONTEND.md)
 - [Como Obter card_token_id](../../docs/COMO_OBTER_CARD_TOKEN.md)
 - [Webhooks para Assinaturas](../../docs/WEBHOOKS_ASSINATURAS.md)
 - [Guia de Campos](../../docs/GUIA_CAMPOS.md)
