@@ -2,7 +2,7 @@
  * Testes de integração para validar recursos disponíveis
  */
 
-import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
+import { PaymentMercadoPago } from '../../archive/legacy/nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';
 

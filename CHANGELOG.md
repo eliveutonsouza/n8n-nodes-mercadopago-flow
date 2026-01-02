@@ -5,9 +5,42 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] - 2025-01-01
+
+### Added
+
+- Novos recursos implementados: Payments, Customers, Cards, Preferences, QR/Orders, POS, Stores, Chargebacks, OAuth, Payment Methods, Identification Types
+- Nova estrutura modular com `GenericFunctions.ts` para requisições centralizadas
+- Nova credencial simplificada `MercadoPagoApi` (apenas `accessToken` e `baseUrl` opcional)
+- Testes de integração completos para todos os novos recursos
+- Testes unitários para `GenericFunctions` e credenciais
+- Documentação completa da API do Mercado Pago em `docs/API_COMPLETA_MERCADO_PAGO.md`
+- Documentação de compatibilidade de ambiente em `docs/COMPATIBILIDADE_AMBIENTE.md`
+- Scripts de teste frontend (`test/frontend-test.html`, `test/generate-config.js`)
+- Scripts de teste local com servidor (`test/local/server-with-capture.ts`, `test/local/test-with-frontend-data.ts`)
+
+### Changed
+
+- Refatoração completa da estrutura do node para arquitetura modular
+- Código legado movido para `archive/legacy/`
+- Documentação reorganizada em `docs/`
+- Scripts temporários removidos, mantendo apenas `scripts/README.md`
+- Todos os recursos agora usam `apiRequest` centralizado
+- Melhorias nos mocks e expectativas dos testes
+- Correção de trailing whitespaces em arquivos de documentação
+
+### Fixed
+
+- Correção de erros TypeScript (parâmetros não usados)
+- Correção de mocks do `buildUrl` em testes
+- Ajuste de endpoints para corresponder ao código real
+- Correção de erros de sintaxe (vírgulas duplas)
+- Todos os 197 testes agora passando
+
 ## [1.2.1] - 2024-12-31
 
 ### Fixed
+
 - Melhorado tratamento de erros para parâmetros obrigatórios
 - Mensagens de erro mais claras quando campos obrigatórios não estão preenchidos
 - Captura específica de erros "Bad request - please check your parameters" do n8n

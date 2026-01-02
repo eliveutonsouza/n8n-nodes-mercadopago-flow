@@ -3,7 +3,7 @@
  * Executa testes reais contra a API do Mercado Pago
  */
 
-import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
+import { PaymentMercadoPago } from '../../archive/legacy/nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { LocalExecuteFunctions } from '../helpers/local-execute-functions';
 import { loadCredentialsFromEnv, displayCredentialsInfo } from '../helpers/env-loader';
 

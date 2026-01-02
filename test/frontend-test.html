@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teste de Assinatura - Mercado Pago + n8n</title>
+    <!-- Configuração do .env (gerado automaticamente) -->
+    <script src="frontend-config.js"></script>
+    <script
+      src="https://sdk.mercadopago.com/js/v2"
+      onerror="console.error('Erro ao carregar SDK do Mercado Pago'); alert('Erro ao carregar SDK do Mercado Pago. Verifique sua conexão com a internet.')"
+    ></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        padding: 40px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+      }
+
+      .form-section h2 {
+        color: #333;
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .required {
+        color: #e74c3c;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="url"],
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+        background: white;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="url"]:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .card-form-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .card-form-field {
+        margin-bottom: 15px;
+      }
+
+      .card-form-field label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 13px;
+        color: #666;
+      }
+
+      #form-checkout__cardNumber,
+      #form-checkout__expirationDate,
+      #form-checkout__securityCode {
+        width: 100%;
+        min-height: 48px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        background: white;
+        position: relative;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* Estilos para os iframes do CardForm */
+      #form-checkout__cardNumber iframe,
+      #form-checkout__expirationDate iframe,
+      #form-checkout__securityCode iframe {
+        width: 100% !important;
+        height: 48px !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Garantir que os iframes sejam clicáveis */
+      #form-checkout__cardNumber,
+      #form-checkout__expirationDate,
+      #form-checkout__securityCode {
+        pointer-events: auto !important;
+        z-index: 1;
+        cursor: text;
+        position: relative;
+      }
+
+      /* Estilos para os campos SELECT (issuer e installments) */
+      #form-checkout__issuer,
+      #form-checkout__installments {
+        width: 100%;
+        min-height: 48px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        background: white;
+        padding: 8px 12px;
+        font-size: 16px;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      /* Garantir que elementos dentro sejam interativos */
+      #form-checkout__cardNumber *,
+      #form-checkout__expirationDate *,
+      #form-checkout__securityCode * {
+        pointer-events: auto !important;
+      }
+
+      /* Garantir que elementos dentro sejam interativos */
+      #form-checkout__cardNumber *,
+      #form-checkout__expirationDate *,
+      #form-checkout__securityCode * {
+        pointer-events: auto !important;
+      }
+
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #1976d2;
+      }
+
+      .warning-box {
+        background: #fff3e0;
+        border-left: 4px solid #ff9800;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #f57c00;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .loading.active {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .result {
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .result.active {
+        display: block;
+      }
+
+      .result.success {
+        background: #e8f5e9;
+        border-left: 4px solid #4caf50;
+        color: #2e7d32;
+      }
+
+      .result.error {
+        background: #ffebee;
+        border-left: 4px solid #f44336;
+        color: #c62828;
+      }
+
+      .result h3 {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .result pre {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+
+      .test-card-info {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .test-card-info strong {
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Teste de Assinatura</h1>
+      <p class="subtitle">Mercado Pago + n8n Node</p>
+
+      <div class="info-box">
+        <strong>ℹ️ Informação:</strong> Este formulário gera um token de cartão
+        no frontend usando CardForm do Mercado Pago e envia para o webhook do
+        n8n.
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Importante:</strong> Tokens gerados via API não funcionam
+        para assinaturas. Este frontend demonstra o fluxo correto.
+      </div>
+
+      <div class="info-box">
+        <strong>📝 Instruções:</strong>
+        <ol style="margin: 8px 0 0 20px; padding: 0">
+          <li>Preencha a <strong>Public Key</strong> e saia do campo (blur)</li>
+          <li>
+            Aguarde a mensagem "✅ Pronto! Você pode digitar nos campos agora"
+          </li>
+          <li>Então você poderá digitar nos campos do cartão</li>
+        </ol>
+      </div>
+
+      <form id="form-checkout">
+        <!-- Configuração -->
+        <div class="form-section">
+          <h2>📋 Configuração</h2>
+
+          <div class="form-group">
+            <label for="publicKey"
+              >Public Key do Mercado Pago <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="publicKey"
+              placeholder="APP_USR-..."
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="webhookUrl"
+              >URL do Webhook n8n <span class="required">*</span></label
+            >
+            <input
+              type="url"
+              id="webhookUrl"
+              placeholder="https://seu-n8n.com/webhook/assinatura"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="planId"
+              >ID do Plano <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="planId"
+              placeholder="2c9380848f..."
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="payerEmail"
+              >E-mail do Pagador <span class="required">*</span></label
+            >
+            <input
+              type="email"
+              id="payerEmail"
+              placeholder="cliente@email.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="payerDocument">CPF/CNPJ do Pagador</label>
+            <input
+              type="text"
+              id="payerDocument"
+              placeholder="12345678909"
+              maxlength="14"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="userId">User ID (Opcional)</label>
+            <input type="text" id="userId" placeholder="uuid-do-usuario" />
+          </div>
+
+          <div class="form-group">
+            <label for="planType">Tipo de Plano (Opcional)</label>
+            <select id="planType">
+              <option value="">Selecione...</option>
+              <option value="premium">Premium</option>
+              <option value="pro">Pro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CardForm -->
+        <div class="form-section">
+          <h2>💳 Dados do Cartão</h2>
+
+          <div class="test-card-info">
+            <strong>Cartão de Teste (Sandbox):</strong><br />
+            Número: 5031 4332 1540 6351<br />
+            CVV: 123 | Vencimento: 11/30 | Nome: APRO
+          </div>
+
+          <div class="info-box" id="cardform-status" style="display: none">
+            <strong>ℹ️ Status:</strong>
+            <span id="cardform-status-text">Aguardando inicialização...</span>
+          </div>
+
+          <div class="card-form-container">
+            <div class="card-form-field">
+              <label>Número do Cartão</label>
+              <div id="form-checkout__cardNumber"></div>
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px"
+            >
+              <div class="card-form-field">
+                <label>Validade</label>
+                <div id="form-checkout__expirationDate"></div>
+              </div>
+
+              <div class="card-form-field">
+                <label>CVV</label>
+                <div id="form-checkout__securityCode"></div>
+              </div>
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px"
+            >
+              <div class="card-form-field">
+                <label>Banco Emissor</label>
+                <select id="form-checkout__issuer"></select>
+              </div>
+
+              <div class="card-form-field">
+                <label>Parcelas</label>
+                <select id="form-checkout__installments"></select>
+              </div>
+            </div>
+
+            <div class="card-form-field">
+              <label>Nome no Cartão</label>
+              <input
+                type="text"
+                id="form-checkout__cardholderName"
+                placeholder="Nome como está no cartão"
+                required
+              />
+            </div>
+
+            <div class="card-form-field">
+              <label>E-mail do Portador</label>
+              <input
+                type="email"
+                id="form-checkout__cardholderEmail"
+                placeholder="E-mail do portador do cartão"
+              />
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px"
+            >
+              <div class="card-form-field">
+                <label>Tipo de Documento</label>
+                <select id="form-checkout__identificationType">
+                  <option value="">Selecione...</option>
+                  <option value="CPF">CPF</option>
+                  <option value="CNPJ">CNPJ</option>
+                </select>
+              </div>
+
+              <div class="card-form-field">
+                <label>Número do Documento</label>
+                <input
+                  type="text"
+                  id="form-checkout__identificationNumber"
+                  placeholder="12345678909"
+                  maxlength="14"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="submit-button">🚀 Criar Assinatura</button>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Processando...</p>
+        </div>
+
+        <div class="result" id="result"></div>
+      </form>
+    </div>
+
+    <script>
+      let mp = null;
+      let cardForm = null;
+      let isInitializing = false; // Flag para evitar múltiplas inicializações simultâneas
+      let formInstanceId = 0; // Contador para IDs únicos de formulário
+
+      // Verificar se SDK do Mercado Pago está carregado
+      function checkMercadoPagoSDK() {
+        if (typeof MercadoPago === "undefined") {
+          showResult(
+            "error",
+            "SDK do Mercado Pago não foi carregado. Verifique sua conexão com a internet e recarregue a página."
+          );
+          return false;
+        }
+        return true;
+      }
+
+      // Inicializar Mercado Pago quando Public Key for preenchida
+      document
+        .getElementById("publicKey")
+        .addEventListener("blur", function () {
+          const publicKey = this.value.trim();
+          if (publicKey && publicKey.startsWith("APP_USR-")) {
+            initializeMercadoPago(publicKey).catch((error) => {
+              console.error("Erro ao inicializar:", error);
+              showResult(
+                "error",
+                "Erro ao inicializar: " + (error?.message || error)
+              );
+            });
+          }
+        });
+
+      async function initializeMercadoPago(publicKey) {
+        // Prevenir múltiplas inicializações simultâneas
+        if (isInitializing) {
+          console.log("Inicialização já em andamento, aguardando...");
+          return;
+        }
+
+        try {
+          isInitializing = true;
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:473",
+                message: "initializeMercadoPago entry",
+                data: {
+                  publicKey: publicKey?.substring(0, 20) + "...",
+                  protocol: window.location.protocol,
+                  url: window.location.href,
+                  hasExistingCardForm: !!cardForm,
+                },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix",
+                hypothesisId: "E",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          // Verificar se SDK está disponível
+          if (!checkMercadoPagoSDK()) {
+            isInitializing = false;
+            return;
+          }
+
+          // Destruir CardForm anterior se existir
+          if (cardForm) {
+            try {
+              // Tentar desmontar o CardForm se tiver método unmount
+              if (typeof cardForm.unmount === "function") {
+                cardForm.unmount();
+              }
+            } catch (unmountError) {
+              console.warn(
+                "Erro ao desmontar CardForm anterior:",
+                unmountError
+              );
+            }
+            cardForm = null;
+          }
+
+          // Verificar se os elementos do DOM estão prontos (recriar referências após limpeza)
+          const cardNumberEl = document.getElementById(
+            "form-checkout__cardNumber"
+          );
+          const expirationEl = document.getElementById(
+            "form-checkout__expirationDate"
+          );
+          const securityEl = document.getElementById(
+            "form-checkout__securityCode"
+          );
+          const issuerEl = document.getElementById("form-checkout__issuer");
+          const installmentsEl = document.getElementById(
+            "form-checkout__installments"
+          );
+          const cardholderEmailEl = document.getElementById(
+            "form-checkout__cardholderEmail"
+          );
+          const identificationTypeEl = document.getElementById(
+            "form-checkout__identificationType"
+          );
+          const identificationNumberEl = document.getElementById(
+            "form-checkout__identificationNumber"
+          );
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:510",
+                message: "DOM elements check",
+                data: {
+                  cardNumber: !!cardNumberEl,
+                  expiration: !!expirationEl,
+                  security: !!securityEl,
+                  issuer: !!issuerEl,
+                  installments: !!installmentsEl,
+                  cardholderEmail: !!cardholderEmailEl,
+                  identificationType: !!identificationTypeEl,
+                  identificationNumber: !!identificationNumberEl,
+                },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "run1",
+                hypothesisId: "B",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          if (
+            !cardNumberEl ||
+            !expirationEl ||
+            !securityEl ||
+            !issuerEl ||
+            !installmentsEl
+          ) {
+            showResult(
+              "error",
+              "Elementos do formulário não encontrados. Recarregue a página."
+            );
+            isInitializing = false;
+            return;
+          }
+
+          // Limpeza agressiva: remover todos os filhos (incluindo iframes) e atributos
+          // Isso é crítico porque o SDK do Mercado Pago mantém contextos globais
+          const elementsToClean = [
+            cardNumberEl,
+            expirationEl,
+            securityEl,
+            issuerEl,
+            installmentsEl,
+          ];
+
+          elementsToClean.forEach((el) => {
+            if (el) {
+              while (el.firstChild) {
+                el.removeChild(el.firstChild);
+              }
+              Array.from(el.attributes).forEach((attr) => {
+                if (
+                  attr.name.startsWith("data-") ||
+                  attr.name.startsWith("mp-")
+                ) {
+                  el.removeAttribute(attr.name);
+                }
+              });
+            }
+          });
+
+          // Aguardar um pouco para garantir que o DOM foi limpo completamente
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:556",
+                message: "Before MercadoPago constructor",
+                data: {
+                  publicKeyLength: publicKey?.length,
+                  publicKeyPrefix: publicKey?.substring(0, 10),
+                  isValidFormat: publicKey?.startsWith("APP_USR-"),
+                },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "run1",
+                hypothesisId: "C",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          // Sempre criar uma nova instância do MercadoPago para evitar contextos compartilhados
+          // O SDK mantém contextos globais que causam conflitos se reutilizarmos a instância
+          mp = new MercadoPago(publicKey, {
+            locale: "pt-BR",
+          });
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:670",
+                message: "New MercadoPago instance created after DOM cleanup",
+                data: {
+                  publicKey: publicKey?.substring(0, 20) + "...",
+                  domCleaned: true,
+                },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix-v2",
+                hypothesisId: "F",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          console.log("Inicializando CardForm...");
+          console.log("Elementos prontos:", {
+            cardNumber: cardNumberEl,
+            expiration: expirationEl,
+            security: securityEl,
+          });
+
+          // Mostrar status
+          const statusEl = document.getElementById("cardform-status");
+          const statusText = document.getElementById("cardform-status-text");
+          if (statusEl && statusText) {
+            statusEl.style.display = "block";
+            statusText.textContent = "Inicializando CardForm...";
+          }
+
+          // #region agent log
+          const cardFormConfig = {
+            hasCardholderEmail: !!cardholderEmailEl,
+            hasIdentificationType: !!identificationTypeEl,
+            hasIdentificationNumber: !!identificationNumberEl,
+            hasIssuer: !!issuerEl,
+            hasInstallments: !!installmentsEl,
+            allRequiredElements: !!(
+              cardNumberEl &&
+              expirationEl &&
+              securityEl &&
+              issuerEl &&
+              installmentsEl
+            ),
+          };
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:581",
+                message: "Before cardForm initialization",
+                data: cardFormConfig,
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "run1",
+                hypothesisId: "D",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          // #region agent log
+          // Verificar se há contextos globais do SDK antes de criar CardForm
+          const globalContexts = {
+            hasMercadoPagoGlobal: typeof window.MercadoPago !== "undefined",
+            mercadoPagoVersion: window.MercadoPago?.version || "unknown",
+            // Verificar se há algum contexto armazenado globalmente
+            hasExpirationFieldsContext:
+              typeof window.__MP_EXPIRATION_FIELDS__ !== "undefined",
+          };
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:712",
+                message: "Before cardForm creation - checking global contexts",
+                data: globalContexts,
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix-v2",
+                hypothesisId: "G",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          // Gerar IDs únicos para TODOS os campos para evitar conflitos de contexto
+          // O SDK usa os IDs dos campos individuais para criar contextos, não apenas o ID do formulário
+          formInstanceId++;
+          const uniqueFormId = `form-checkout-${formInstanceId}`;
+          const uniqueCardNumberId = `form-checkout__cardNumber-${formInstanceId}`;
+          const uniqueExpirationId = `form-checkout__expirationDate-${formInstanceId}`;
+          const uniqueSecurityId = `form-checkout__securityCode-${formInstanceId}`;
+          const uniqueIssuerId = `form-checkout__issuer-${formInstanceId}`;
+          const uniqueInstallmentsId = `form-checkout__installments-${formInstanceId}`;
+          const uniqueCardholderNameId = `form-checkout__cardholderName-${formInstanceId}`;
+          const uniqueCardholderEmailId = `form-checkout__cardholderEmail-${formInstanceId}`;
+          const uniqueIdentificationTypeId = `form-checkout__identificationType-${formInstanceId}`;
+          const uniqueIdentificationNumberId = `form-checkout__identificationNumber-${formInstanceId}`;
+
+          // Atualizar os IDs dos elementos DOM para corresponder aos IDs únicos
+          // CRÍTICO: Atualizar o ID do formulário principal primeiro
+          // Procurar o formulário por qualquer ID que comece com "form-checkout" (pode ser "form-checkout" ou "form-checkout-1", etc.)
+          let formEl = document.getElementById("form-checkout");
+          if (!formEl) {
+            // Se não encontrou, procurar por qualquer elemento form que tenha ID começando com "form-checkout"
+            const allForms = document.querySelectorAll(
+              'form[id^="form-checkout"]'
+            );
+            if (allForms.length > 0) {
+              formEl = allForms[0];
+            }
+          }
+          if (formEl) {
+            formEl.id = uniqueFormId;
+          } else {
+            showResult(
+              "error",
+              "Formulário não encontrado. Recarregue a página."
+            );
+            isInitializing = false;
+            return;
+          }
+
+          if (cardNumberEl) cardNumberEl.id = uniqueCardNumberId;
+          if (expirationEl) expirationEl.id = uniqueExpirationId;
+          if (securityEl) securityEl.id = uniqueSecurityId;
+
+          // CRÍTICO: Verificar e preservar o tipo de elemento para issuer e installments
+          if (issuerEl) {
+            // #region agent log
+            fetch(
+              "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  location: "frontend-test.html:873",
+                  message:
+                    "Before updating issuerEl ID - checking element type",
+                  data: {
+                    tagName: issuerEl.tagName,
+                    nodeName: issuerEl.nodeName,
+                    id: issuerEl.id,
+                    willUpdateTo: uniqueIssuerId,
+                  },
+                  timestamp: Date.now(),
+                  sessionId: "debug-session",
+                  runId: "post-fix-v4",
+                  hypothesisId: "I",
+                }),
+              }
+            ).catch(() => {});
+            // #endregion
+
+            issuerEl.id = uniqueIssuerId;
+
+            // #region agent log
+            fetch(
+              "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  location: "frontend-test.html:873",
+                  message: "After updating issuerEl ID - checking element type",
+                  data: {
+                    tagName: issuerEl.tagName,
+                    nodeName: issuerEl.nodeName,
+                    id: issuerEl.id,
+                  },
+                  timestamp: Date.now(),
+                  sessionId: "debug-session",
+                  runId: "post-fix-v4",
+                  hypothesisId: "I",
+                }),
+              }
+            ).catch(() => {});
+            // #endregion
+          }
+
+          if (installmentsEl) {
+            // #region agent log
+            fetch(
+              "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  location: "frontend-test.html:874",
+                  message:
+                    "Before updating installmentsEl ID - checking element type",
+                  data: {
+                    tagName: installmentsEl.tagName,
+                    nodeName: installmentsEl.nodeName,
+                    id: installmentsEl.id,
+                    willUpdateTo: uniqueInstallmentsId,
+                  },
+                  timestamp: Date.now(),
+                  sessionId: "debug-session",
+                  runId: "post-fix-v4",
+                  hypothesisId: "I",
+                }),
+              }
+            ).catch(() => {});
+            // #endregion
+
+            installmentsEl.id = uniqueInstallmentsId;
+
+            // #region agent log
+            fetch(
+              "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  location: "frontend-test.html:874",
+                  message:
+                    "After updating installmentsEl ID - checking element type",
+                  data: {
+                    tagName: installmentsEl.tagName,
+                    nodeName: installmentsEl.nodeName,
+                    id: installmentsEl.id,
+                  },
+                  timestamp: Date.now(),
+                  sessionId: "debug-session",
+                  runId: "post-fix-v4",
+                  hypothesisId: "I",
+                }),
+              }
+            ).catch(() => {});
+            // #endregion
+          }
+          if (document.getElementById("form-checkout__cardholderName")) {
+            document.getElementById("form-checkout__cardholderName").id =
+              uniqueCardholderNameId;
+          }
+          if (cardholderEmailEl) cardholderEmailEl.id = uniqueCardholderEmailId;
+          if (identificationTypeEl)
+            identificationTypeEl.id = uniqueIdentificationTypeId;
+          if (identificationNumberEl)
+            identificationNumberEl.id = uniqueIdentificationNumberId;
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:745",
+                message:
+                  "Using unique IDs for all form fields to avoid context conflicts",
+                data: {
+                  uniqueFormId: uniqueFormId,
+                  formInstanceId: formInstanceId,
+                  uniqueCardNumberId: uniqueCardNumberId,
+                  uniqueExpirationId: uniqueExpirationId,
+                  uniqueSecurityId: uniqueSecurityId,
+                  uniqueIssuerId: uniqueIssuerId,
+                  uniqueInstallmentsId: uniqueInstallmentsId,
+                },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix-v3",
+                hypothesisId: "H",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          cardForm = mp.cardForm({
+            amount: "1.00",
+            iframe: true,
+            form: {
+              id: uniqueFormId,
+              cardNumber: {
+                id: uniqueCardNumberId,
+                placeholder: "Número do cartão",
+              },
+              expirationDate: {
+                id: uniqueExpirationId,
+                placeholder: "MM/AA",
+              },
+              securityCode: {
+                id: uniqueSecurityId,
+                placeholder: "CVV",
+              },
+              cardholderName: {
+                id: uniqueCardholderNameId,
+                placeholder: "Nome no cartão",
+              },
+              issuer: {
+                id: uniqueIssuerId,
+                placeholder: "Banco emissor",
+              },
+              installments: {
+                id: uniqueInstallmentsId,
+                placeholder: "Parcelas",
+              },
+              ...(cardholderEmailEl
+                ? {
+                    cardholderEmail: {
+                      id: uniqueCardholderEmailId,
+                      placeholder: "E-mail",
+                    },
+                  }
+                : {}),
+              ...(identificationTypeEl
+                ? {
+                    identificationType: {
+                      id: uniqueIdentificationTypeId,
+                      placeholder: "Tipo de documento",
+                    },
+                  }
+                : {}),
+              ...(identificationNumberEl
+                ? {
+                    identificationNumber: {
+                      id: uniqueIdentificationNumberId,
+                      placeholder: "CPF/CNPJ",
+                    },
+                  }
+                : {}),
+            },
+            callbacks: {
+              onFormMounted: (error) => {
+                // #region agent log
+                const errorDetails = {
+                  hasError: !!error,
+                  isArray: Array.isArray(error),
+                  errorLength: Array.isArray(error) ? error.length : 1,
+                  errorType: typeof error,
+                  errorString: error?.toString?.(),
+                  errorMessage: error?.message,
+                  firstError: Array.isArray(error)
+                    ? typeof error[0] === "string"
+                      ? error[0]
+                      : error[0]?.message ||
+                        error[0]?.toString?.() ||
+                        JSON.stringify(error[0])
+                    : null,
+                  secondError:
+                    Array.isArray(error) && error.length > 1
+                      ? typeof error[1] === "string"
+                        ? error[1]
+                        : error[1]?.message ||
+                          error[1]?.toString?.() ||
+                          JSON.stringify(error[1])
+                      : null,
+                };
+                fetch(
+                  "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      location: "frontend-test.html:616",
+                      message: "onFormMounted callback",
+                      data: errorDetails,
+                      timestamp: Date.now(),
+                      sessionId: "debug-session",
+                      runId: "run1",
+                      hypothesisId: "E",
+                    }),
+                  }
+                ).catch(() => {});
+                // #endregion
+
+                if (error) {
+                  console.error("Erro ao montar CardForm:", error);
+
+                  // Pode ser um array de erros ou um erro único
+                  let errorMsg = "Erro desconhecido ao montar CardForm";
+
+                  if (Array.isArray(error)) {
+                    // Array de erros
+                    const errorMessages = error
+                      .map((e) => {
+                        if (typeof e === "string") return e;
+                        if (e?.message) return e.message;
+                        if (e?.toString) return e.toString();
+                        return JSON.stringify(e);
+                      })
+                      .join(", ");
+                    errorMsg = `Erros ao montar CardForm: ${errorMessages}`;
+                  } else if (error) {
+                    // Erro único
+                    if (error.message) {
+                      errorMsg = error.message;
+                    } else if (typeof error === "string") {
+                      errorMsg = error;
+                    } else if (
+                      error.toString &&
+                      error.toString() !== "[object Object]"
+                    ) {
+                      errorMsg = error.toString();
+                    } else {
+                      // Tentar extrair informações do objeto
+                      try {
+                        errorMsg = JSON.stringify(error);
+                      } catch {
+                        errorMsg =
+                          "Erro ao montar CardForm (objeto de erro não serializável)";
+                      }
+                    }
+                  }
+
+                  showResult(
+                    "error",
+                    "Erro ao inicializar CardForm: " + errorMsg
+                  );
+                  return;
+                }
+                console.log("CardForm montado com sucesso");
+
+                // Atualizar status
+                const statusText = document.getElementById(
+                  "cardform-status-text"
+                );
+                if (statusText) {
+                  statusText.textContent =
+                    "CardForm montado! Verificando campos...";
+                }
+
+                // Verificar se os campos estão realmente montados e interativos
+                setTimeout(() => {
+                  // Buscar iframes usando seletores que funcionam com IDs dinâmicos
+                  const iframes = document.querySelectorAll(
+                    "[id^='form-checkout__cardNumber-'] iframe, [id^='form-checkout__expirationDate-'] iframe, [id^='form-checkout__securityCode-'] iframe, [id^='form-checkout__issuer-'] iframe, [id^='form-checkout__installments-'] iframe"
+                  );
+                  console.log("Iframes encontrados:", iframes.length);
+
+                  if (iframes.length >= 5) {
+                    console.log(
+                      "✅ CardForm está pronto! Você pode digitar nos campos agora."
+                    );
+
+                    // Atualizar status
+                    if (statusText) {
+                      statusText.textContent =
+                        "✅ Pronto! Você pode digitar nos campos agora.";
+                      statusText.parentElement.style.background = "#e8f5e9";
+                      statusText.parentElement.style.borderLeftColor =
+                        "#4caf50";
+                      statusText.parentElement.style.color = "#2e7d32";
+                    }
+
+                    // Adicionar indicador visual
+                    const cardFormContainer = document.querySelector(
+                      ".card-form-container"
+                    );
+                    if (cardFormContainer) {
+                      cardFormContainer.style.border = "2px solid #4caf50";
+                      setTimeout(() => {
+                        cardFormContainer.style.border = "none";
+                      }, 2000);
+                    }
+                  } else {
+                    console.warn(
+                      "⚠️ Nenhum iframe encontrado. CardForm pode não estar funcionando corretamente."
+                    );
+                    if (statusText) {
+                      statusText.textContent =
+                        "❌ Erro: Campos não foram montados. Verifique o console.";
+                      statusText.parentElement.style.background = "#ffebee";
+                      statusText.parentElement.style.borderLeftColor =
+                        "#f44336";
+                      statusText.parentElement.style.color = "#c62828";
+                    }
+                    showResult(
+                      "error",
+                      "CardForm não foi montado corretamente. Verifique o console para mais detalhes."
+                    );
+                  }
+                }, 1500);
+              },
+              onSubmit: async (event) => {
+                event.preventDefault();
+                await handleSubmit();
+              },
+              onFetching: (resource) => {
+                console.log("Buscando recurso:", resource);
+              },
+            },
+          });
+
+          console.log("Mercado Pago inicializado com sucesso");
+          isInitializing = false;
+
+          // #region agent log
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:733",
+                message: "CardForm initialized successfully",
+                data: { protocol: window.location.protocol },
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix",
+                hypothesisId: "E",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+        } catch (error) {
+          isInitializing = false;
+          console.error("Erro ao inicializar Mercado Pago:", error);
+
+          // #region agent log
+          const catchErrorDetails = {
+            isArray: Array.isArray(error),
+            errorType: typeof error,
+            errorString: error?.toString?.(),
+            errorMessage: error?.message,
+            errorStack: error?.stack,
+            protocol: window.location.protocol,
+            url: window.location.href,
+          };
+          fetch(
+            "http://127.0.0.1:7243/ingest/6bc1e356-316f-469b-9ce6-49715393d589",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: "frontend-test.html:1052",
+                message: "catch block error",
+                data: catchErrorDetails,
+                timestamp: Date.now(),
+                sessionId: "debug-session",
+                runId: "post-fix-v3",
+                hypothesisId: "H",
+              }),
+            }
+          ).catch(() => {});
+          // #endregion
+
+          // Se o erro for de contexto duplicado, sugerir recarregar a página
+          const errorMsg = error?.message || error?.toString?.() || "";
+          if (
+            errorMsg.includes("Context") &&
+            errorMsg.includes("already exists")
+          ) {
+            showResult(
+              "error",
+              "Erro: Contexto do SDK já existe. Por favor, recarregue a página (F5) e tente novamente. " +
+                "Este erro ocorre quando o CardForm é inicializado múltiplas vezes sem recarregar a página."
+            );
+            return;
+          }
+
+          // Tratar erro que pode ser array ou objeto
+          let errorMessage = "Erro desconhecido ao inicializar Mercado Pago";
+
+          if (Array.isArray(error)) {
+            errorMessage = error
+              .map((e) => {
+                if (typeof e === "string") return e;
+                if (e?.message) return e.message;
+                if (e?.toString && e.toString() !== "[object Object]")
+                  return e.toString();
+                return JSON.stringify(e);
+              })
+              .join(", ");
+          } else if (error) {
+            if (error.message) {
+              errorMessage = error.message;
+            } else if (typeof error === "string") {
+              errorMessage = error;
+            } else if (
+              error.toString &&
+              error.toString() !== "[object Object]"
+            ) {
+              errorMessage = error.toString();
+            } else {
+              try {
+                errorMessage = JSON.stringify(error);
+              } catch {
+                errorMessage =
+                  "Erro ao inicializar Mercado Pago (objeto não serializável)";
+              }
+            }
+          }
+
+          showResult(
+            "error",
+            "Erro ao inicializar Mercado Pago: " + errorMessage
+          );
+
+          // Log detalhado para debug
+          console.error("Detalhes do erro:", {
+            error,
+            errorType: Array.isArray(error) ? "array" : typeof error,
+            message: error?.message,
+            stack: error?.stack,
+            MercadoPagoAvailable: typeof MercadoPago !== "undefined",
+          });
+        }
+      }
+
+      // Carregar configurações do .env (se disponível)
+      function loadConfigFromEnv() {
+        if (typeof window.FRONTEND_CONFIG !== "undefined") {
+          const config = window.FRONTEND_CONFIG;
+
+          if (config.MERCADOPAGO_PUBLIC_KEY) {
+            const publicKeyInput = document.getElementById("publicKey");
+            if (publicKeyInput && !publicKeyInput.value) {
+              publicKeyInput.value = config.MERCADOPAGO_PUBLIC_KEY;
+              console.log("✅ Public Key carregada do .env");
+            }
+          }
+
+          if (config.N8N_WEBHOOK_URL) {
+            const webhookInput = document.getElementById("webhookUrl");
+            if (webhookInput && !webhookInput.value) {
+              webhookInput.value = config.N8N_WEBHOOK_URL;
+              console.log("✅ Webhook URL carregada do .env");
+            }
+          }
+
+          // Se Public Key foi carregada, inicializar automaticamente após SDK carregar
+          if (config.MERCADOPAGO_PUBLIC_KEY) {
+            waitForMercadoPagoSDK(function () {
+              setTimeout(() => {
+                // Verificar se não está inicializando antes de chamar
+                if (!isInitializing) {
+                  initializeMercadoPago(config.MERCADOPAGO_PUBLIC_KEY).catch(
+                    (error) => {
+                      console.error(
+                        "Erro ao inicializar automaticamente:",
+                        error
+                      );
+                    }
+                  );
+                }
+              }, 1000); // Delay maior para garantir que outras inicializações terminaram
+            });
+          }
+        } else {
+          console.log(
+            "ℹ️ Arquivo frontend-config.js não encontrado. Execute: npm run frontend:config"
+          );
+        }
+      }
+
+      // Aguardar carregamento do SDK
+      function waitForMercadoPagoSDK(callback, maxAttempts = 10) {
+        let attempts = 0;
+        const checkInterval = setInterval(function () {
+          attempts++;
+          if (typeof MercadoPago !== "undefined") {
+            clearInterval(checkInterval);
+            console.log("SDK do Mercado Pago carregado com sucesso");
+            if (callback) callback();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            console.error(
+              "SDK do Mercado Pago não foi carregado após " +
+                maxAttempts +
+                " tentativas"
+            );
+            showResult(
+              "error",
+              "SDK do Mercado Pago não foi carregado. Verifique sua conexão com a internet e recarregue a página."
+            );
+          }
+        }, 500);
+      }
+
+      window.addEventListener("load", function () {
+        // Carregar configurações do .env
+        loadConfigFromEnv();
+
+        waitForMercadoPagoSDK(function () {
+          console.log("SDK pronto para uso");
+        });
+      });
+
+      async function handleSubmit() {
+        const submitButton = document.getElementById("submit-button");
+        const loading = document.getElementById("loading");
+        const result = document.getElementById("result");
+
+        // Validações
+        const publicKey = document.getElementById("publicKey").value.trim();
+        const webhookUrl = document.getElementById("webhookUrl").value.trim();
+        const planId = document.getElementById("planId").value.trim();
+        const payerEmail = document.getElementById("payerEmail").value.trim();
+        const payerDocument = document
+          .getElementById("payerDocument")
+          .value.trim();
+        const userId = document.getElementById("userId")?.value.trim() || "";
+        const planType =
+          document.getElementById("planType")?.value.trim() || "";
+
+        if (!publicKey || !publicKey.startsWith("APP_USR-")) {
+          showResult("error", "Public Key inválida. Deve começar com APP_USR-");
+          return;
+        }
+
+        if (!webhookUrl) {
+          showResult("error", "URL do Webhook é obrigatória");
+          return;
+        }
+
+        if (!planId) {
+          showResult("error", "ID do Plano é obrigatório");
+          return;
+        }
+
+        if (!payerEmail || !payerEmail.includes("@")) {
+          showResult("error", "E-mail do pagador inválido");
+          return;
+        }
+
+        if (!checkMercadoPagoSDK()) {
+          return;
+        }
+
+        if (!mp || !cardForm) {
+          showResult(
+            "error",
+            "Mercado Pago não foi inicializado. Preencha a Public Key e saia do campo (blur)."
+          );
+          return;
+        }
+
+        // Mostrar loading
+        submitButton.disabled = true;
+        loading.classList.add("active");
+        result.classList.remove("active");
+
+        try {
+          // Obter dados completos do CardForm
+          console.log("Obtendo dados do CardForm...");
+          const cardFormData = cardForm.getCardFormData();
+
+          if (!cardFormData || !cardFormData.token) {
+            throw new Error(
+              "Não foi possível obter dados do CardForm. Verifique se todos os campos do cartão foram preenchidos corretamente."
+            );
+          }
+
+          console.log("Dados do CardForm obtidos:", {
+            token: cardFormData.token.substring(0, 20) + "...",
+            paymentMethodId: cardFormData.paymentMethodId,
+            issuerId: cardFormData.issuerId,
+          });
+
+          // Preparar payload no formato do React funcional
+          const payload = {
+            resource: "subscriptions",
+            operation: "create",
+            planId: planId,
+            payerEmail: payerEmail,
+            startDate: new Date().toISOString(),
+            trialDays: 0,
+            subscriptionStatus: "authorized",
+            // Dados completos do Mercado Pago
+            mercadoPagoData: {
+              paymentMethodId: cardFormData.paymentMethodId || "",
+              issuerId: cardFormData.issuerId || "",
+              cardholderEmail: cardFormData.cardholderEmail || payerEmail,
+              token: cardFormData.token,
+              installments: cardFormData.installments || 1,
+              identificationNumber: cardFormData.identificationNumber || "",
+              identificationType: cardFormData.identificationType || "CPF",
+            },
+          };
+
+          // Campos opcionais
+          if (payerDocument) {
+            payload.payerDocument = payerDocument.replace(/\D/g, ""); // Remove não-números
+            // Atualizar identificationNumber se não foi preenchido no CardForm
+            if (!payload.mercadoPagoData.identificationNumber) {
+              payload.mercadoPagoData.identificationNumber =
+                payload.payerDocument;
+            }
+          }
+
+          if (userId) {
+            payload.userId = userId;
+          }
+
+          if (planType) {
+            payload.planType = planType;
+          }
+
+          // Detectar se está rodando em servidor local
+          const isLocalServer =
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1";
+          const localPort = window.location.port || "3000";
+          const localWebhookUrl = `http://localhost:${localPort}/webhook`;
+
+          // Se estiver em servidor local, usar endpoint local; caso contrário, usar webhook do n8n
+          const targetUrl = isLocalServer ? localWebhookUrl : webhookUrl;
+
+          console.log("Enviando para:", targetUrl);
+          console.log("Payload:", payload);
+
+          // Enviar para webhook (local ou n8n)
+          const response = await fetch(targetUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const responseData = await response.json();
+
+          if (response.ok) {
+            let successMessage = "Assinatura criada com sucesso!";
+
+            // Se estiver em servidor local, adicionar informações do teste
+            if (isLocalServer && responseData.subscriptionId) {
+              successMessage += `\n\nSubscription ID: ${responseData.subscriptionId}\n\nO teste local foi executado automaticamente. Verifique o console do servidor para mais detalhes.`;
+            }
+
+            showResult("success", successMessage, responseData);
+          } else {
+            throw new Error(
+              responseData.message ||
+                responseData.error ||
+                "Erro ao criar assinatura"
+            );
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          showResult("error", error.message || "Erro desconhecido", error);
+        } finally {
+          submitButton.disabled = false;
+          loading.classList.remove("active");
+        }
+      }
+
+      function showResult(type, message, data = null) {
+        const result = document.getElementById("result");
+        result.className = `result active ${type}`;
+
+        const icon = type === "success" ? "✅" : "❌";
+        const title = type === "success" ? "Sucesso" : "Erro";
+
+        let html = `<h3>${icon} ${title}</h3><p>${message}</p>`;
+
+        if (data) {
+          html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        result.innerHTML = html;
+        result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      // Prevenir submit padrão
+      document
+        .getElementById("form-checkout")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          handleSubmit();
+        });
+    </script>
+  </body>
+</html>

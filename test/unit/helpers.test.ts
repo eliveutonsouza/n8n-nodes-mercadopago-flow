@@ -12,7 +12,7 @@ import {
 	validateEmail,
 	formatDate,
 	handleMercadoPagoError,
-} from '../../nodes/PaymentMercadoPago/helpers';
+} from '../../archive/legacy/nodes/PaymentMercadoPago/helpers';
 import {
 	mockErrorResponse,
 	mockNetworkError,

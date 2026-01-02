@@ -2,7 +2,7 @@
  * Testes unitários para o normalizador de resposta
  */
 
-import { normalizeResponse } from '../../nodes/PaymentMercadoPago/utils/responseNormalizer';
+import { normalizeResponse } from '../../archive/legacy/nodes/PaymentMercadoPago/utils/responseNormalizer';
 
 describe('Response Normalizer', () => {
 	describe('Provider e Type', () => {

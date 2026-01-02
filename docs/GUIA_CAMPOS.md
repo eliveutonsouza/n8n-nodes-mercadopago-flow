@@ -121,7 +121,7 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
 | ID do Plano | string | ✅ Sim* | ID do plano de assinatura. *Obrigatório apenas se criar assinatura com plano. É possível criar assinatura sem plano. | `"2c938084726fca480172750000000000"` |
 | E-mail do Pagador | string | ✅ Sim | E-mail do pagador. Obrigatório para criar assinatura. Permite obter identificador único do assinante. | `"cliente@exemplo.com"` |
 | CPF/CNPJ do Pagador | string | ❌ Não | CPF ou CNPJ do pagador (apenas números). Recomendado para validação. | `"12345678909"` |
-| Token do Cartão | string | ⚠️ Condicional | Token do cartão (card_token_id) obtido via Checkout Transparente no front-end. **Obrigatório se subscriptionStatus for "authorized"**. Se não fornecido, assinatura será criada com status "pending" e retornará init_point. | `"e3ed6f098462036dd2cbabe314b9de2a"` |
+| Token do Cartão | string | ⚠️ Condicional | **⚠️ CRÍTICO**: Token do cartão (card_token_id) **DEVE ser gerado no FRONTEND** usando CardForm do Mercado Pago. **Tokens gerados via API (`/v1/card_tokens`) NÃO funcionam** e serão recusados. Obrigatório se subscriptionStatus for "authorized". Se não fornecido, assinatura será criada com status "pending" e retornará init_point. Veja [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) para implementação completa. | `"e3ed6f098462036dd2cbabe314b9de2a"` |
 | Status da Assinatura | options | ❌ Não | Status inicial: "pending" (sem cartão, retorna init_point) ou "authorized" (com cartão, requer card_token_id obrigatório). Padrão: "pending" | `"pending"` ou `"authorized"` |
 | Data de Início | dateTime | ❌ Não | Data de início da assinatura (ISO 8601). Funciona apenas em conjunto com end_date. | `"2024-01-01T00:00:00.000Z"` |
 | Período de Trial (dias) | number | ❌ Não | Número de dias de período de trial grátis | `7` |
@@ -170,12 +170,18 @@ Cria uma nova assinatura baseada em um plano existente. Segundo a documentação
 
 **📝 Notas Importantes (baseadas na documentação oficial):**
 
-1. **Fluxo com Cartão (Status: "authorized"):**
-   - **Requer `cardTokenId` obrigatório**
+1. **⚠️ LIMITAÇÃO CRÍTICA - Token DEVE ser Gerado no Frontend:**
+   - **Tokens gerados via API (`POST /v1/card_tokens`) NÃO funcionam** para assinaturas
+   - **Tokens gerados no backend ou via n8n são sempre recusados** com erro `"Card token service not found"`
+   - O token **DEVE ser gerado no frontend** usando o CardForm oficial do Mercado Pago
+   - Isso é uma **exigência de segurança** do Mercado Pago para proteger o consentimento do pagador
+   - Veja [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) para implementação completa
+
+2. **Fluxo com Cartão (Status: "authorized"):**
+   - **Requer `cardTokenId` obrigatório** (gerado no frontend)
    - Forneça `cardTokenId` e `subscriptionStatus: "authorized"`
    - A assinatura será ativada imediatamente
    - O `cardTokenId` **deve ser obtido no front-end** usando a PUBLIC_KEY do Mercado Pago através do **CardForm** do Checkout Transparente
-   - Veja [Como Obter card_token_id](./COMO_OBTER_CARD_TOKEN.md) para instruções detalhadas
    - **Importante**: O token expira em 7 dias e pode ser usado apenas uma vez
 
 2. **Fluxo sem Cartão (Status: "pending"):**

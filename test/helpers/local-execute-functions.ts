@@ -7,7 +7,7 @@ import {
 	INodeExecutionData,
 } from 'n8n-workflow';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { MercadoPagoCredentials } from '../../nodes/PaymentMercadoPago/types';
+import { MercadoPagoCredentials } from '../../archive/legacy/nodes/PaymentMercadoPago/types';
 
 interface RequestOptions extends AxiosRequestConfig {
 	json?: boolean;

@@ -8,7 +8,6 @@ Node customizado do n8n para processamento de pagamentos via Mercado Pago, com s
 - 💰 **Pagamentos PIX** (criação, consulta, reembolso)
 - 📋 **Planos** (criar, consultar, listar, atualizar)
 - 🔄 **Assinaturas** (criar, pausar, retomar, cancelar, consultar, listar)
-- 📅 **Pagamentos Recorrentes** (gerenciamento completo)
 - 🔔 **Webhooks** (registro, listagem, exclusão, consulta)
 
 ## 📋 Requisitos
@@ -86,6 +85,37 @@ docker restart n8n
    - **Client Secret**: (Opcional)
    - **Environment**: Sandbox ou Production
 
+## ⚠️ Limitação Importante: Assinaturas Exigem Frontend
+
+**IMPORTANTE**: Para criar assinaturas (preapproval) no Mercado Pago, o token do cartão (`card_token_id`) **DEVE ser gerado no frontend** usando o CardForm oficial do Mercado Pago.
+
+### Por que isso é necessário?
+
+O Mercado Pago exige **prova de consentimento do pagador** para assinaturas recorrentes. Essa prova só existe quando:
+- O cartão é digitado pelo usuário no navegador
+- Usando o CardForm oficial do Mercado Pago
+- Com fingerprint do dispositivo embutido
+
+### O que NÃO funciona
+
+❌ Tokens gerados via API (`/v1/card_tokens`)
+❌ Tokens gerados no backend
+❌ Tokens gerados via n8n
+❌ Automação 100% server-side
+
+Todos esses tokens são **sempre recusados** pela API para assinaturas.
+
+### O que FUNCIONA
+
+✅ Token gerado no frontend via CardForm
+✅ Fluxo: Frontend → Webhook n8n → Criar Assinatura
+✅ Arquitetura mínima com página HTML + n8n
+
+### Documentação Completa
+
+Para entender o fluxo completo e ver exemplos de código, consulte:
+- **[Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md)** - Guia completo com exemplos
+
 ## 📖 Uso
 
 > 📋 **Guia Completo de Campos**: Para exemplos detalhados de preenchimento de todos os campos de todas as operações, consulte o [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md).
@@ -162,6 +192,8 @@ Reembolsa total ou parcialmente um pagamento PIX.
 
 Cria uma nova assinatura baseada em um plano existente.
 
+**⚠️ IMPORTANTE**: O token do cartão (`cardTokenId`) **deve ser gerado no frontend** usando CardForm. Tokens gerados via API não funcionam. Veja [Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md).
+
 **Campos obrigatórios:**
 
 - ID do Plano
@@ -170,8 +202,12 @@ Cria uma nova assinatura baseada em um plano existente.
 **Campos opcionais:**
 
 - CPF/CNPJ do Pagador
+- Token do Cartão (gerado no frontend via CardForm)
+- Status da Assinatura ("pending" ou "authorized")
 - Data de Início
 - Período de Trial (dias)
+- Descrição da Assinatura
+- Referência Externa
 
 ### Assinaturas - Pausar/Retomar/Cancelar
 
@@ -286,9 +322,8 @@ O campo `raw` contém a resposta completa da API do Mercado Pago para acesso a t
 
 ### Documentação de Uso
 
+- [Fluxo de Assinatura com Frontend](./docs/FLUXO_ASSINATURA_FRONTEND.md) - **LEIA PRIMEIRO**: Guia completo sobre por que frontend é obrigatório e como implementar
 - [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md) - Exemplos detalhados de preenchimento de todos os campos
-- [Integração Frontend n8n](./docs/INTEGRACAO_FRONTEND_N8N.md) - Como integrar o frontend com o n8n
-- [Como Obter Card Token](./docs/COMO_OBTER_CARD_TOKEN.md) - Guia para obter token do cartão no frontend
 - [Webhooks de Assinaturas](./docs/WEBHOOKS_ASSINATURAS.md) - Configuração e processamento de webhooks
 
 ### Documentação Oficial do Mercado Pago

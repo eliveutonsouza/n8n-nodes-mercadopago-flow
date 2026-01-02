@@ -3,7 +3,7 @@
  */
 
 import { INodeExecutionData } from 'n8n-workflow';
-import { MercadoPagoCredentials } from '../../nodes/PaymentMercadoPago/types';
+import { MercadoPagoCredentials } from '../../archive/legacy/nodes/PaymentMercadoPago/types';
 import { mockCredentials } from './fixtures';
 
 export interface MockExecuteFunctions {

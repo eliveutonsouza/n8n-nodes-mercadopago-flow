@@ -695,7 +695,7 @@ export function getNodeProperties(): INodeProperties[] {
       },
       default: "",
       description:
-        "Token do cartão de crédito (obtido via Mercado Pago Checkout no front-end). Se não fornecido, a assinatura será criada com status 'pending' e retornará um init_point para checkout",
+        "⚠️ CRÍTICO: Token do cartão DEVE ser gerado no FRONTEND usando CardForm do Mercado Pago. Tokens gerados via API (/v1/card_tokens) NÃO funcionam e serão recusados. Se não fornecido, a assinatura será criada com status 'pending' e retornará um init_point para checkout. Veja: docs/FLUXO_ASSINATURA_FRONTEND.md",
     },
     {
       displayName: "Status da Assinatura",

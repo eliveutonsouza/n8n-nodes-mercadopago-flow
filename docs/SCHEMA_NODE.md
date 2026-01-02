@@ -150,6 +150,14 @@ Sem campos obrigatórios. Retorna lista de todos os planos.
 
 ## Resource: SUBSCRIPTION
 
+### ⚠️ IMPORTANTE: Token DEVE ser Gerado no Frontend
+
+**CRÍTICO**: O campo `cardTokenId` **DEVE ser gerado no frontend** usando o CardForm oficial do Mercado Pago.
+
+**Tokens gerados via API (`/v1/card_tokens`) NÃO funcionam** para assinaturas e serão sempre recusados pela API com erro `"Card token service not found"`.
+
+**Veja**: [Fluxo de Assinatura com Frontend](./FLUXO_ASSINATURA_FRONTEND.md) para implementação completa.
+
 ### Operation: create
 
 #### Campos Obrigatórios
@@ -166,9 +174,11 @@ Sem campos obrigatórios. Retorna lista de todos os planos.
 | `payerDocument` | `payer.identification.number` | string | CPF/CNPJ do pagador |
 | `startDate` | `start_date` | dateTime | Data de início da assinatura |
 | `trialPeriodDays` | `trial_period_days` | number | Período de trial em dias |
-| `cardTokenId` | `card_token_id` | string | Token do cartão (obtido no frontend) |
+| `cardTokenId` | `card_token_id` | string | **⚠️ Token do cartão gerado no FRONTEND via CardForm. Tokens gerados via API não funcionam.** |
 | `subscriptionStatus` | `status` | options | "pending" ou "authorized" |
 | `backUrl` | `back_url` | string | URL de retorno após checkout |
+| `reason` | `reason` | string | Descrição da assinatura |
+| `externalReference` | `external_reference` | string | Referência externa para rastreamento |
 
 #### Regras Internas
 
@@ -176,15 +186,18 @@ Sem campos obrigatórios. Retorna lista de todos os planos.
    - Status automaticamente definido como `authorized`
    - Assinatura ativa imediatamente
    - Campo `subscriptionStatus` ignorado
+   - **Token DEVE ter sido gerado no frontend via CardForm**
 
 2. **Se `cardTokenId` NÃO fornecido**:
    - Status definido como `pending`
    - Retorna `init_point` para checkout
    - Campo `subscriptionStatus` pode ser usado para forçar `pending`
+   - **Nota**: A API pode exigir token mesmo para pending (depende da configuração do plano)
 
 3. **Validação de Token**:
    - Se status = "authorized" e `cardTokenId` ausente → Erro
-   - Token deve ser obtido no frontend via Mercado Pago JS SDK
+   - **Token deve ser obtido no frontend via Mercado Pago JS SDK (CardForm)**
+   - Tokens gerados via API serão recusados
 
 4. **Esconder se método = PIX**:
    - Este Resource NÃO deve ser usado para PIX

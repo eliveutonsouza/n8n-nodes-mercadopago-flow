@@ -6,7 +6,7 @@
  * para garantir que estamos testando exatamente o que será publicado no npm
  */
 
-import { PaymentMercadoPago } from "../../dist/nodes/PaymentMercadoPago/PaymentMercadoPago.node";
+import { PaymentMercadoPago } from "../../archive/legacy/nodes/PaymentMercadoPago/PaymentMercadoPago.node";
 import { LocalExecuteFunctions } from "../helpers/local-execute-functions";
 import {
   loadCredentialsFromEnv,

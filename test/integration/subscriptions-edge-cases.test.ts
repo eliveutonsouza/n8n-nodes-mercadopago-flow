@@ -2,7 +2,7 @@
  * Testes de integração para casos extremos de Assinaturas
  */
 
-import { PaymentMercadoPago } from '../../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
+import { PaymentMercadoPago } from '../../archive/legacy/nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 import { createMockExecuteFunctions } from '../mocks/n8n-mocks';
 import { mockSubscriptionResponse } from '../mocks/mercado-pago-mocks';
 import type { MockExecuteFunctions } from '../mocks/n8n-mocks';

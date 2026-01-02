@@ -3,7 +3,7 @@
  * Este script verifica a estrutura e validação das rotas sem fazer requisições reais
  */
 
-import { PaymentMercadoPago } from '../nodes/PaymentMercadoPago/PaymentMercadoPago.node';
+import { PaymentMercadoPago } from '../archive/legacy/nodes/PaymentMercadoPago/PaymentMercadoPago.node';
 
 describe('Validação de Rotas do Mercado Pago', () => {
 	const node = new PaymentMercadoPago();

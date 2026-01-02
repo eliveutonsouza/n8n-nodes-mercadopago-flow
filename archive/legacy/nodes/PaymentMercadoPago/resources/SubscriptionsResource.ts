@@ -254,21 +254,58 @@ export class SubscriptionsResource implements IResourceHandler {
     if (subscriptionStatus === "authorized" && (!cardTokenId || cardTokenId.trim() === "")) {
       throw new Error(
         "Para criar uma assinatura com status 'authorized', é obrigatório fornecer um Token do Cartão (card_token_id). " +
-        "O token deve ser obtido no front-end usando a PUBLIC_KEY do Mercado Pago através do CardForm do Checkout Transparente. " +
-        "Veja a documentação: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards " +
+        "⚠️ IMPORTANTE: O token DEVE ser gerado no FRONTEND usando CardForm do Mercado Pago. " +
+        "Tokens gerados via API (/v1/card_tokens) NÃO funcionam para assinaturas. " +
+        "Veja: docs/FLUXO_ASSINATURA_FRONTEND.md para implementação completa. " +
         "Alternativamente, crie a assinatura com status 'pending' (sem card_token_id) e receberá um init_point para checkout. " +
         "Referência oficial: https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post"
       );
     }
 
     // Se card_token_id foi fornecido, usar status "authorized"
-    // Se não foi fornecido, usar status "pending" para retornar init_point
+    // Se não foi fornecido, NÃO enviar status (deixa API decidir) ou usar "pending"
     if (cardTokenId && cardTokenId.trim() !== "") {
-      body.card_token_id = cardTokenId.trim();
+      // Validação básica do token
+      const trimmedToken = cardTokenId.trim();
+      if (trimmedToken.length < 10) {
+        throw new Error(
+          "Token do cartão inválido: token muito curto. " +
+          "O token deve ter pelo menos 10 caracteres. " +
+          "Certifique-se de que o token foi gerado corretamente no frontend usando CardForm do Mercado Pago."
+        );
+      }
+      
+      body.card_token_id = trimmedToken;
       body.status = "authorized";
+      
+      // Log de debug (sem expor token completo)
+      // #region agent log
+      fetch("http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: "SubscriptionsResource.ts:267",
+          message: "createSubscription: token validated",
+          data: {
+            tokenLength: trimmedToken.length,
+            tokenPreview: trimmedToken.substring(0, 10) + "...",
+            environment: baseUrl.includes("sandbox") ? "sandbox" : "production",
+          },
+          timestamp: Date.now(),
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "D",
+        }),
+      }).catch(() => {});
+      // #endregion
     } else {
-      // Sem card_token_id, criar com status "pending" para obter init_point
-      body.status = subscriptionStatus || "pending";
+      // Sem card_token_id, não enviar status explicitamente
+      // A API criará automaticamente com status "pending" e retornará init_point
+      // Só envia status se explicitamente solicitado como "pending"
+      if (subscriptionStatus === "pending") {
+        // Não enviar status, deixar API decidir
+        // body.status não é definido quando não há token
+      }
     }
 
     if (payerDocument && payerDocument.trim() !== "") {
@@ -314,6 +351,31 @@ export class SubscriptionsResource implements IResourceHandler {
         sessionId: "debug-session",
         runId: "run1",
         hypothesisId: "C",
+      }),
+    }).catch(() => {});
+    // #endregion
+
+    // Log de ambiente antes de fazer a requisição
+    // #region agent log
+    const accessTokenEnvironment = baseUrl.includes("sandbox") ? "sandbox" : "production";
+    fetch("http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "SubscriptionsResource.ts:336",
+        message: "createSubscription: environment check",
+        data: {
+          accessTokenEnvironment: accessTokenEnvironment,
+          baseUrl: baseUrl,
+          hasCardToken: !!body.card_token_id,
+          tokenPreview: body.card_token_id ? body.card_token_id.substring(0, 10) + "..." : "none",
+          planId: planId,
+          payerEmail: payerEmail,
+        },
+        timestamp: Date.now(),
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "D",
       }),
     }).catch(() => {});
     // #endregion
@@ -371,18 +433,99 @@ export class SubscriptionsResource implements IResourceHandler {
       // #endregion
 
       // Tratamento de erros específicos com mensagens melhoradas
-      const errorMessage = error?.response?.data?.message || error?.message || "Erro desconhecido";
+      const errorData = error?.response?.data || {};
+      const errorCode = errorData.error || '';
+      const errorMessage = errorData.message || error?.message || "Erro desconhecido";
       const errorStatus = error?.response?.status;
       const errorContext = `[Criar Assinatura | PlanId: ${planId} | PayerEmail: ${payerEmail} | Status: ${body.status || subscriptionStatus} | HTTP: ${errorStatus || 'N/A'}]`;
 
-      // Erro sobre card_token_id
+      // Log de debug com detalhes completos do erro
+      // #region agent log
+      fetch("http://127.0.0.1:7244/ingest/4b5afbeb-1407-4570-82cb-60bfdb0848f9", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: "SubscriptionsResource.ts:379",
+          message: "createSubscription: error details",
+          data: {
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            errorStatus: errorStatus,
+            hasCardToken: !!body.card_token_id,
+            environment: baseUrl.includes("sandbox") ? "sandbox" : "production",
+            errorDataKeys: Object.keys(errorData),
+            fullErrorData: errorData,
+          },
+          timestamp: Date.now(),
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "E",
+        }),
+      }).catch(() => {});
+      // #endregion
+
+      // Tratamento específico para CC_VAL_433 (validação de cartão falhou)
+      if (
+        errorCode === 'CC_VAL_433' || 
+        errorMessage.includes('CC_VAL_433') || 
+        errorMessage.includes('Credit card validation has failed')
+      ) {
+        const currentEnvironment = baseUrl.includes("sandbox") ? "sandbox" : "produção";
+        throw new Error(
+          `${errorContext} Erro de validação de cartão (CC_VAL_433): ${errorMessage}. ` +
+          `Possíveis causas: ` +
+          `1. Token do cartão expirado ou já usado (tokens são de uso único e têm validade curta). ` +
+          `2. ⚠️ INCOMPATIBILIDADE DE AMBIENTE: Token gerado com PUBLIC_KEY de um ambiente (sandbox/produção) ` +
+          `   mas Access Token está em ambiente diferente. ` +
+          `   Verifique: PUBLIC_KEY e Access Token DEVEM estar no mesmo ambiente. ` +
+          `   Ambiente atual do Access Token: ${currentEnvironment}. ` +
+          `3. Access Token sem permissões adequadas ou incorreto. ` +
+          `4. Token não válido para assinaturas (gerado via API em vez de frontend CardForm). ` +
+          `Solução: ` +
+          `- Verifique se a PUBLIC_KEY usada no frontend está no mesmo ambiente do Access Token. ` +
+          `- Gere um novo token no frontend usando CardForm do Mercado Pago. ` +
+          `- Certifique-se de que PUBLIC_KEY e Access Token estão ambos em "${currentEnvironment}". ` +
+          `Veja: docs/FLUXO_ASSINATURA_FRONTEND.md. ` +
+          `Erro da API: ${errorMessage} (Status HTTP: ${errorStatus || 'N/A'})`
+        );
+      }
+
+      // Tratamento específico para "User cards api internal server error"
+      if (
+        errorMessage.includes('User cards api internal server error') || 
+        errorMessage.includes('internal server error')
+      ) {
+        throw new Error(
+          `${errorContext} Erro interno da API de cartões do Mercado Pago: ${errorMessage}. ` +
+          `Possíveis causas: ` +
+          `1. Token do cartão expirado ou inválido. ` +
+          `2. Problemas temporários na API do Mercado Pago. ` +
+          `3. Token gerado em ambiente diferente do Access Token. ` +
+          `Solução: Gere um novo token no frontend e tente novamente. ` +
+          `Erro da API: ${errorMessage} (Status HTTP: ${errorStatus || 'N/A'})`
+        );
+      }
+
+      // Erro sobre card_token_id - especialmente "Card token service not found"
+      if (errorMessage.includes("Card token service not found") || errorMessage.includes("card token service")) {
+        throw new Error(
+          `${errorContext} Erro ao criar assinatura: Token do cartão inválido para assinaturas. ` +
+          `Tokens gerados via API (/v1/card_tokens) NÃO funcionam para assinaturas e são sempre recusados. ` +
+          `O token DEVE ser gerado no FRONTEND usando CardForm do Mercado Pago (Checkout Transparente). ` +
+          `Veja: docs/FLUXO_ASSINATURA_FRONTEND.md para implementação completa. ` +
+          `Referência: https://www.mercadopago.com.br/developers/pt/reference/subscriptions/_preapproval/post ` +
+          `Erro da API: ${errorMessage} (Status HTTP: ${errorStatus || 'N/A'})`
+        );
+      }
+
+      // Erro sobre card_token_id (outros casos)
       if (errorMessage.includes("card_token_id") || errorMessage.includes("card token")) {
         throw new Error(
           `${errorContext} Erro ao criar assinatura: Token do Cartão (card_token_id) é obrigatório para status "authorized". ` +
-          `O token deve ser obtido no front-end usando o CardForm do Mercado Pago (Checkout Transparente). ` +
-          `Veja a documentação: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-test/test-cards ` +
+          `O token DEVE ser obtido no FRONTEND usando CardForm do Mercado Pago (Checkout Transparente). ` +
+          `Tokens gerados via API não funcionam. Veja: docs/FLUXO_ASSINATURA_FRONTEND.md ` +
           `Alternativa: Crie a assinatura com status "pending" (sem card_token_id) para receber um init_point. ` +
-          `Erro da API: ${errorMessage}`
+          `Erro da API: ${errorMessage} (Status HTTP: ${errorStatus || 'N/A'})`
         );
       }
 
@@ -405,13 +548,31 @@ export class SubscriptionsResource implements IResourceHandler {
         );
       }
 
-      // Erro de autenticação
-      if (errorStatus === 401 || errorStatus === 403) {
-        throw new Error(
-          `${errorContext} Erro de autenticação: Verifique suas credenciais do Mercado Pago (Access Token). ` +
-          `Certifique-se de estar usando o token correto para o ambiente (sandbox ou produção). ` +
-          `Erro da API (${errorStatus}): ${errorMessage}`
-        );
+      // Erro de autenticação (após verificar que não é erro de validação de cartão)
+      // Verificar se o erro 401/403 é realmente de autenticação ou se é um erro de validação mascarado
+      if ((errorStatus === 401 || errorStatus === 403) && !errorCode.includes('CC_VAL') && !errorMessage.includes('CC_VAL')) {
+        // Verificar se há informações sobre ambiente no erro
+        const environment = baseUrl.includes("sandbox") ? "sandbox" : "produção";
+        const environmentMismatch = 
+          (errorMessage.includes("sandbox") && environment === "produção") ||
+          (errorMessage.includes("production") && environment === "sandbox");
+        
+        let authErrorMessage = `${errorContext} Erro de autenticação: Verifique suas credenciais do Mercado Pago (Access Token). `;
+        
+        if (environmentMismatch) {
+          authErrorMessage += `⚠️ Possível incompatibilidade de ambiente: Access Token pode estar em ambiente diferente do esperado. `;
+        }
+        
+        authErrorMessage += `Certifique-se de estar usando o token correto para o ambiente (${environment}). `;
+        
+        // Verificar se o token do cartão foi fornecido e pode estar causando o problema
+        if (body.card_token_id) {
+          authErrorMessage += `Nota: Se você está usando um token de cartão, verifique se ele foi gerado no mesmo ambiente (${environment}). `;
+        }
+        
+        authErrorMessage += `Erro da API (${errorStatus}): ${errorMessage}`;
+        
+        throw new Error(authErrorMessage);
       }
 
       // Adiciona detalhes de causas se disponíveis

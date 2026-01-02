@@ -2,7 +2,7 @@
  * Mocks das respostas da API do Mercado Pago
  */
 
-import { Payment, Plan, Subscription, Webhook } from '../../nodes/PaymentMercadoPago/types';
+import { Payment, Plan, Subscription, Webhook } from '../../archive/legacy/nodes/PaymentMercadoPago/types';
 
 export const mockPixPaymentResponse: Payment = {
 	id: '123456789',
