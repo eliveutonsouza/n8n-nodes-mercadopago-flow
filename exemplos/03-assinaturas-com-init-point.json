@@ -28,7 +28,7 @@
       "typeVersion": 1,
       "position": [450, 300],
       "credentials": {
-        "paymentMercadoPagoAPI": {
+        "mercadoPagoApi": {
           "id": "1",
           "name": "Mercado Pago API"
         }
@@ -176,7 +176,7 @@
       "typeVersion": 1,
       "position": [650, 500],
       "credentials": {
-        "paymentMercadoPagoAPI": {
+        "mercadoPagoApi": {
           "id": "1",
           "name": "Mercado Pago API"
         }

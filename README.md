@@ -2,35 +2,35 @@
 
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-mercadopago-flow.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-flow)
 [![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-mercadopago-flow.svg)](https://www.npmjs.com/package/n8n-nodes-mercadopago-flow)
+[![CI](https://github.com/eliveutonsouza/n8n-nodes-mercadopago-flow/workflows/CI/badge.svg)](https://github.com/eliveutonsouza/n8n-nodes-mercadopago-flow/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 
 Node customizado do n8n para integração completa com a API do Mercado Pago, oferecendo suporte a **15 recursos** diferentes para processamento de pagamentos, gestão de clientes, assinaturas recorrentes e muito mais.
 
 ## 🎯 Recursos Disponíveis
 
-Este node oferece integração completa com a API do Mercado Pago através dos seguintes recursos:
+Este node oferece integração completa com a API do Mercado Pago através de **15 recursos** diferentes. Veja a tabela completa abaixo:
 
-### Recursos Principais (Foco do Projeto)
+| Recurso                     | Operações Disponíveis                                            | Documentação                                                                                                                                                  |
+| --------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 💰 **PIX**                  | Criar, Consultar, Reembolsar                                     | [Guia PIX](./docs/GUIA_CAMPOS.md#pix)                                                                                                                         |
+| 📋 **Planos**               | Criar, Consultar, Listar, Atualizar                              | [Guia Planos](./docs/GUIA_CAMPOS.md#planos)                                                                                                                   |
+| 🔄 **Assinaturas**          | Criar, Pausar, Retomar, Cancelar, Consultar, Listar              | [Guia Assinaturas](./docs/GUIA_CAMPOS.md#assinaturas)                                                                                                         |
+| 🔔 **Webhooks**             | Registrar, Consultar, Listar, Excluir                            | [Guia Webhooks](./docs/WEBHOOKS_ASSINATURAS.md)                                                                                                               |
+| 💳 **Payments**             | Criar, Consultar, Listar, Buscar, Reembolsar, Capturar, Cancelar | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post)                                                            |
+| 👥 **Customers**            | Criar, Consultar, Atualizar, Deletar, Listar, Buscar             | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/customers/_customers/post)                                                          |
+| 🎴 **Cards**                | Criar, Consultar, Deletar, Listar                                | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/cards/_customers_customer_id_cards/post)                                            |
+| ⚙️ **Preferences**          | Criar, Consultar, Atualizar                                      | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/preferences/_checkout_preferences/post)                                             |
+| 📱 **QR Orders**            | Criar, Consultar, Listar                                         | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/qr_orders/_instore_orders_qr_seller_collectors_user_id_pos_external_id_orders/post) |
+| 🏪 **POS**                  | Criar, Consultar, Atualizar, Deletar, Listar                     | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/pos/_instore_orders_qr_seller_collectors_user_id_pos/post)                          |
+| 🏬 **Stores**               | Criar, Consultar, Atualizar, Deletar, Listar                     | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/stores/_users_user_id_stores/post)                                                  |
+| ⚠️ **Chargebacks**          | Consultar, Listar, Enviar Documentação                           | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/chargebacks/_chargebacks_id/get)                                                    |
+| 🔐 **OAuth**                | Autorizar, Renovar Token, Obter Info do Usuário                  | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post)                                                            |
+| 💳 **Payment Methods**      | Listar                                                           | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/payment_methods/_payment_methods/get)                                               |
+| 🆔 **Identification Types** | Listar                                                           | [API Mercado Pago](https://www.mercadopago.com.br/developers/pt/reference/identification_types/_identification_types/get)                                     |
 
-- 💰 **PIX** - Pagamentos instantâneos via PIX (criar, consultar, reembolsar)
-- 📋 **Planos** - Gestão de planos de assinatura (criar, consultar, listar, atualizar)
-- 🔄 **Assinaturas** - Assinaturas recorrentes (criar, pausar, retomar, cancelar, consultar, listar)
-- 🔔 **Webhooks** - Notificações de eventos (registrar, consultar, listar, excluir)
-
-### Recursos Adicionais
-
-- 💳 **Payments** - Pagamentos genéricos (criar, consultar, listar, buscar, reembolsar, capturar, cancelar)
-- 👥 **Customers** - Gestão de clientes (criar, consultar, atualizar, deletar, listar, buscar)
-- 🎴 **Cards** - Gestão de cartões de crédito (criar, consultar, deletar, listar)
-- ⚙️ **Preferences** - Preferências de checkout (criar, consultar, atualizar)
-- 📱 **QR Orders** - Pedidos via QR Code (criar, consultar, listar)
-- 🏪 **POS** - Pontos de venda (criar, consultar, atualizar, deletar, listar)
-- 🏬 **Stores** - Gestão de lojas (criar, consultar, atualizar, deletar, listar)
-- ⚠️ **Chargebacks** - Gestão de chargebacks (consultar, listar, enviar documentação)
-- 🔐 **OAuth** - Autenticação OAuth (autorizar, renovar token, obter info do usuário)
-- 💳 **Payment Methods** - Métodos de pagamento disponíveis (listar)
-- 🆔 **Identification Types** - Tipos de identificação (listar)
-
-> **Nota**: Este projeto tem foco especial em **PIX** e **Assinaturas**, com documentação detalhada para esses recursos. Para informações sobre os outros recursos, consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs).
+> **Nota**: Este projeto tem foco especial em **PIX** e **Assinaturas**, com documentação detalhada para esses recursos. Para informações sobre os outros recursos, consulte a [documentação oficial do Mercado Pago](https://www.mercadopago.com.br/developers/pt/docs) ou o [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md).
 
 ## 📋 Requisitos
 
@@ -38,9 +38,81 @@ Este node oferece integração completa com a API do Mercado Pago através dos s
 - Node.js >= 18.17.0
 - Credenciais do Mercado Pago (Access Token)
 
-## 🚀 Instalação
+## 🚀 Quick Start
+
+### Instalação Rápida (n8n Self-Hosted)
+
+```bash
+# No diretório do seu n8n
+npm install n8n-nodes-mercadopago-flow
+
+# Reinicie o n8n
+docker restart n8n  # Se usar Docker
+# ou reinicie o processo do n8n
+```
+
+### Primeiros Passos
+
+1. **Configure as credenciais** no n8n:
+
+   - Vá em **Credentials** → **Add Credential**
+   - Selecione **Mercado Pago API**
+   - Adicione seu **Access Token** do Mercado Pago
+
+2. **Crie seu primeiro workflow**:
+
+   - Adicione o node **Mercado Pago**
+   - Selecione o recurso (ex: PIX)
+   - Selecione a operação (ex: Criar)
+   - Configure os campos obrigatórios
+   - Execute o workflow
+
+3. **Veja exemplos prontos**:
+   - Importe workflows de exemplo de `exemplos/`
+   - Veja [Guia de Referência de Campos](./docs/GUIA_CAMPOS.md) para detalhes
+
+## 📦 Instalação Detalhada
+
+### Instalação no n8n Self-Hosted (via NPM) - Recomendado
+
+**Recomendado**: Instale via npm para facilitar atualizações.
+
+1. No diretório do seu n8n self-hosted, instale o pacote:
+
+```bash
+npm install n8n-nodes-mercadopago-flow
+```
+
+2. Reinicie o n8n:
+
+```bash
+# Se estiver usando Docker
+docker restart n8n
+
+# Se estiver usando npm diretamente
+# Reinicie o processo do n8n
+```
+
+3. O node aparecerá na lista de nodes disponíveis no n8n
+
+### Instalação Manual no n8n
+
+1. Clone o repositório e compile:
+
+```bash
+git clone https://github.com/eliveutonsouza/n8n-nodes-mercadopago-flow.git
+cd n8n-nodes-mercadopago-flow
+npm install
+npm run build
+```
+
+2. Copie a pasta `dist` para o diretório de nodes customizados do n8n
+3. Reinicie o n8n
+4. O node aparecerá na lista de nodes disponíveis
 
 ### Instalação Local (Desenvolvimento)
+
+Para contribuir ou desenvolver:
 
 1. Clone o repositório:
 
@@ -67,33 +139,13 @@ npm run build
 npm run dev
 ```
 
-### Instalação no n8n Self-Hosted (via NPM)
-
-**Recomendado**: Instale via npm para facilitar atualizações.
-
-1. No diretório do seu n8n self-hosted, instale o pacote:
+5. Execute os testes:
 
 ```bash
-npm install n8n-nodes-mercadopago-flow
+npm test
 ```
 
-2. Reinicie o n8n:
-
-```bash
-# Se estiver usando Docker
-docker restart n8n
-
-# Se estiver usando npm diretamente
-# Reinicie o processo do n8n
-```
-
-3. O node aparecerá na lista de nodes disponíveis no n8n
-
-### Instalação Manual no n8n
-
-1. Copie a pasta `dist` para o diretório de nodes customizados do n8n
-2. Reinicie o n8n
-3. O node aparecerá na lista de nodes disponíveis
+Veja [CONTRIBUTING.md](./CONTRIBUTING.md) para mais detalhes sobre desenvolvimento.
 
 ## ⚠️ Requisitos Importantes
 
@@ -408,13 +460,29 @@ O campo `raw` contém a resposta completa da API do Mercado Pago para acesso a t
 
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Por favor:
+Contribuições são muito bem-vindas! Este projeto segue o [Código de Conduta do Contributor Covenant](https://www.contributor-covenant.org/).
 
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+### Como Contribuir
+
+1. **Fork o projeto**
+2. **Crie uma branch** para sua feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit suas mudanças** (`git commit -m 'feat: adiciona nova funcionalidade'`)
+4. **Push para a branch** (`git push origin feature/AmazingFeature`)
+5. **Abra um Pull Request**
+
+### Guias de Contribuição
+
+- 📖 [CONTRIBUTING.md](./CONTRIBUTING.md) - Guia completo de contribuição
+- 🏗️ [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) - Guia de desenvolvimento local
+- ➕ [docs/ADDING_NEW_RESOURCE.md](./docs/ADDING_NEW_RESOURCE.md) - Como adicionar novos recursos
+
+### Tipos de Contribuição
+
+- 🐛 Reportar bugs
+- ✨ Propor novas features
+- 📚 Melhorar documentação
+- 🧪 Adicionar testes
+- 🔧 Melhorar código existente
 
 ## 📄 Licença
 

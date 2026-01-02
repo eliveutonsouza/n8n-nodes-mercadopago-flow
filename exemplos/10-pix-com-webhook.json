@@ -1,0 +1,112 @@
+{
+  "name": "Mercado Pago - PIX com Processamento de Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "criar-pix",
+        "responseMode": "lastNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Criar PIX",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "criar-pix"
+    },
+    {
+      "parameters": {
+        "resource": "pix",
+        "operation": "create",
+        "amount": "={{ $json.body.amount }}",
+        "description": "={{ $json.body.description }}",
+        "payerEmail": "={{ $json.body.payerEmail }}",
+        "payerDocument": "={{ $json.body.payerDocument || '' }}",
+        "payerName": "={{ $json.body.payerName || '' }}",
+        "externalReference": "={{ $json.body.externalReference || '' }}"
+      },
+      "id": "criar-pix",
+      "name": "Criar PIX",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "mercadoPagoApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webhooks",
+        "operation": "create",
+        "url": "https://seu-n8n.com/webhook/pix-notification",
+        "events": "payment",
+        "description": "Webhook para notificações PIX"
+      },
+      "id": "registrar-webhook",
+      "name": "Registrar Webhook",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "credentials": {
+        "mercadoPagoApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"paymentId\": $json.id, \"qrCode\": $json.qrCode, \"status\": $json.status } }}",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Responder com QR Code",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - Criar PIX": {
+      "main": [
+        [
+          {
+            "node": "Criar PIX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar PIX": {
+      "main": [
+        [
+          {
+            "node": "Registrar Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Responder com QR Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-02T00:00:00.000Z",
+  "versionId": "1"
+}
+

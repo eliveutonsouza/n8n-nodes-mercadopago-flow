@@ -1,9 +1,9 @@
 {
-  "name": "Mercado Pago - Criar Pagamento Recorrente",
+  "name": "Mercado Pago - Criar Pagamento com Cartão",
   "nodes": [
     {
       "parameters": {},
-      "id": "manual-trigger-recurring",
+      "id": "manual-trigger-payment",
       "name": "Quando clicar em 'Testar'",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -11,13 +11,18 @@
     },
     {
       "parameters": {
-        "resource": "recurringPayments",
+        "resource": "payments",
         "operation": "create",
-        "planId": "RECURRING_PLAN_123",
-        "customerId": "CUSTOMER_456"
+        "transactionAmount": 100.50,
+        "description": "Pagamento com cartão de crédito",
+        "paymentMethodId": "credit_card",
+        "payerEmail": "cliente@exemplo.com",
+        "payerDocument": "12345678909",
+        "installments": 1,
+        "statementDescriptor": "LOJA EXEMPLO"
       },
-      "id": "mercado-pago-recurring",
-      "name": "Mercado Pago Recorrente",
+      "id": "mercado-pago-payment",
+      "name": "Mercado Pago Payment",
       "type": "n8n-nodes-mercadopago-flow.mercadoPago",
       "typeVersion": 1,
       "position": [450, 300],
@@ -33,8 +38,8 @@
         "assignments": {
           "assignments": [
             {
-              "id": "recurring-id",
-              "name": "recurringPaymentId",
+              "id": "payment-id",
+              "name": "paymentId",
               "value": "={{ $json.id }}",
               "type": "string"
             },
@@ -45,21 +50,15 @@
               "type": "string"
             },
             {
-              "id": "plan-id",
-              "name": "planId",
-              "value": "={{ $json.planId }}",
-              "type": "string"
+              "id": "amount",
+              "name": "amount",
+              "value": "={{ $json.amount }}",
+              "type": "number"
             },
             {
-              "id": "customer-id",
-              "name": "customerId",
-              "value": "={{ $json.customerId }}",
-              "type": "string"
-            },
-            {
-              "id": "next-billing",
-              "name": "nextBillingDate",
-              "value": "={{ $json.raw.next_billing_date }}",
+              "id": "payment-method",
+              "name": "paymentMethod",
+              "value": "={{ $json.raw.payment_method_id }}",
               "type": "string"
             }
           ]
@@ -78,14 +77,14 @@
       "main": [
         [
           {
-            "node": "Mercado Pago Recorrente",
+            "node": "Mercado Pago Payment",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mercado Pago Recorrente": {
+    "Mercado Pago Payment": {
       "main": [
         [
           {
@@ -104,7 +103,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2024-12-30T00:00:00.000Z",
+  "updatedAt": "2025-01-02T00:00:00.000Z",
   "versionId": "1"
 }
 

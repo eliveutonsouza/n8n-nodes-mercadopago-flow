@@ -5,6 +5,49 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.4.0] - 2025-01-02
+
+### Added
+
+- Arquivo `LICENSE` com licença MIT
+- `CONTRIBUTING.md` - Guia completo para contribuidores
+- GitHub Actions workflow para CI/CD (`.github/workflows/ci.yml`)
+- Templates de issue (`.github/ISSUE_TEMPLATE/`)
+- Template de Pull Request (`.github/PULL_REQUEST_TEMPLATE.md`)
+- `docs/DEVELOPMENT.md` - Guia de desenvolvimento local
+- `docs/ARCHITECTURE.md` - Documentação de arquitetura do projeto
+- `docs/ADDING_NEW_RESOURCE.md` - Guia passo a passo para adicionar novos recursos
+- `docs/API_REFERENCE.md` - Referência completa da API
+- `.editorconfig` - Configuração de padronização de código
+- 5 novos exemplos de workflows n8n:
+  - `06-payments-criar-pagamento-cartao.json` - Pagamento com cartão
+  - `07-customers-criar-cliente.json` - Criar cliente
+  - `08-webhook-processar-notificacao.json` - Processar webhook
+  - `09-assinatura-completa.json` - Fluxo completo: Plano → Assinatura → Webhook
+  - `10-pix-com-webhook.json` - PIX com processamento de webhook
+
+### Changed
+
+- `README.md` - Melhorias significativas:
+  - Adicionados badges (CI, License, TypeScript)
+  - Quick Start mais claro e objetivo
+  - Tabela completa de recursos com operações e links
+  - Seção de contribuição melhorada
+- Todos os exemplos de workflows - Corrigido nome da credencial (`paymentMercadoPagoAPI` → `mercadoPagoApi`)
+- `package.json` - Adicionado campo `engines` com versões mínimas de Node.js e npm
+
+### Fixed
+
+- Nome da credencial corrigido em todos os exemplos de workflows
+- Todos os 197 testes passando
+
+### Documentation
+
+- Documentação completamente reorganizada e melhorada
+- Guias de desenvolvimento e contribuição adicionados
+- Referência completa da API documentada
+- Arquitetura do projeto documentada com diagramas
+
 ## [1.3.0] - 2025-01-01
 
 ### Added

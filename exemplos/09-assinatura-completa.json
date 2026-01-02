@@ -1,0 +1,166 @@
+{
+  "name": "Mercado Pago - Fluxo Completo: Plano → Assinatura → Webhook",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Quando clicar em 'Testar'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 400]
+    },
+    {
+      "parameters": {
+        "resource": "plans",
+        "operation": "create",
+        "name": "Plano Premium Mensal",
+        "amount": 99.99,
+        "frequency": 1,
+        "frequencyType": "months",
+        "currencyId": "BRL"
+      },
+      "id": "criar-plano",
+      "name": "Criar Plano",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "mercadoPagoApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "subscriptions",
+        "operation": "create",
+        "planId": "={{ $json.id }}",
+        "payerEmail": "cliente@exemplo.com",
+        "payerDocument": "12345678909",
+        "subscriptionStatus": "authorized",
+        "startDate": "={{ $now.toISO() }}",
+        "trialPeriodDays": 7
+      },
+      "id": "criar-assinatura",
+      "name": "Criar Assinatura",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "mercadoPagoApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webhooks",
+        "operation": "create",
+        "url": "https://seu-n8n.com/webhook/assinatura",
+        "events": "payment,subscription",
+        "description": "Webhook para assinaturas"
+      },
+      "id": "registrar-webhook",
+      "name": "Registrar Webhook",
+      "type": "n8n-nodes-mercadopago-flow.mercadoPago",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": {
+        "mercadoPagoApi": {
+          "id": "1",
+          "name": "Mercado Pago API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "plan-id",
+              "name": "planId",
+              "value": "={{ $('Criar Plano').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "subscription-id",
+              "name": "subscriptionId",
+              "value": "={{ $('Criar Assinatura').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "webhook-id",
+              "name": "webhookId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Quando clicar em 'Testar'": {
+      "main": [
+        [
+          {
+            "node": "Criar Plano",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Plano": {
+      "main": [
+        [
+          {
+            "node": "Criar Assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Assinatura": {
+      "main": [
+        [
+          {
+            "node": "Registrar Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Webhook": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-02T00:00:00.000Z",
+  "versionId": "1"
+}
+

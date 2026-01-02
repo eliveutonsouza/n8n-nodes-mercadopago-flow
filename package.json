@@ -29,6 +29,10 @@
     "url": "https://github.com/eliveutonsouza/n8n-nodes-mercadopago-flow.git"
   },
   "main": "index.js",
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
