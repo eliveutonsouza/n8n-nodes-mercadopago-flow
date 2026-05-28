@@ -38,3 +38,6 @@ coverage/
 # Frontend config (gerado do .env)
 test/frontend-config.js
 
+# Workflows temporários (não commitados)
+workflows-temp/
+
